@@ -78,10 +78,8 @@ class LFAPolicy:
 
         # Compute log prob for given state and actions
         factor = (np.array([action_0,action_1]) - output_units)/(STDDEV**2)
-        self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector)].T)
+        self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector]).T)
         
-
-
         return action_0, action_1
 
     def save(self, state_file='models/LFAPolicy.npy'):
