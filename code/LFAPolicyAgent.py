@@ -2,6 +2,7 @@ import numpy as np
 
 STDDEV = 1
 
+
 class LinearFAPolicy:
     def __init__(self, poly_degree):
 
@@ -17,7 +18,8 @@ class LinearFAPolicy:
         self.saved_log_probs = []
         self.rewards = []
 
-    def poly_features(self,state, n):
+    @staticmethod
+    def poly_features(state, n):
         '''
         Computes the polynomial feature vector from the input states
 
@@ -59,7 +61,7 @@ class LinearFAPolicy:
         '''
 
         # Compute feature vector
-        feature_vector = self.poly_features(state,self.poly_degree)
+        feature_vector = self.poly_features(state, self.poly_degree)
         
         # Multiply feature vector with weight vector
         output_units = feature_vector.T@self.weights
@@ -76,11 +78,10 @@ class LinearFAPolicy:
 
         return action_0, action_1
 
-
     def save(self, state_file='models/LFAPolicy.npy'):
         # Save the weight matrix to file 
         np.save(state_file,self.weights)
 
-    def load(self,state_file='models/LFAPolicy.npy'):
+    def load(self, state_file='models/LFAPolicy.npy'):
         # Load the weight matrix from file
         self.weights = np.load(state_file)
