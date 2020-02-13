@@ -1,6 +1,8 @@
 import numpy as np
 
 STDDEV = 1
+GAMMA = 0.9
+LEARNING_RATE = 5e-2
 
 
 class LinearFAPolicy:
@@ -13,7 +15,7 @@ class LinearFAPolicy:
         # The number of states is fixed to 8 and the number of
         # actions is fixed to 2, according to
         # the lunar lander environment
-        self.weights = np.zeros(((self.poly_degree+1)**8,2))
+        self.weights = np.zeros(((self.poly_degree+1)**8, 2))
 
         self.saved_log_probs = []
         self.rewards = []
@@ -64,24 +66,25 @@ class LinearFAPolicy:
         feature_vector = self.poly_features(state, self.poly_degree)
         
         # Multiply feature vector with weight vector
-        output_units = feature_vector.T@self.weights
+        output_units = feature_vector.T @ self.weights
 
         # Select Action 0, by sampling from a gaussian
         mean_0 = output_units[0]
-        h_0 = np.random.normal(loc=mean_0,scale=STDDEV)
+        h_0 = np.random.normal(loc=mean_0, scale=STDDEV)
         action_0 = np.tanh(h_0)
 
         # Select Action 1, by sampling from a gaussian
         mean_1 = output_units[1]
-        h_1 = np.random.normal(loc=mean_1,scale=STDDEV)
+        h_1 = np.random.normal(loc=mean_1, scale=STDDEV)
         action_1 = np.tanh(h_1)
 
         return action_0, action_1
 
     def save(self, state_file='models/LFAPolicy.npy'):
         # Save the weight matrix to file 
-        np.save(state_file,self.weights)
+        np.save(state_file, self.weights)
 
     def load(self, state_file='models/LFAPolicy.npy'):
         # Load the weight matrix from file
         self.weights = np.load(state_file)
+
