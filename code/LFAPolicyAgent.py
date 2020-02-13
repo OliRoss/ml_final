@@ -3,7 +3,7 @@ import numpy as np
 STDDEV = 1
 
 
-class LinearFAPolicy:
+class LFAPolicy:
     def __init__(self, poly_degree):
 
         # Degree of the polynomial feature
