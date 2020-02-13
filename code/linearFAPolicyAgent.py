@@ -21,7 +21,7 @@ class LinearFAPolicy(nn.Module):
 
     def forward(self, x):
         action_scores = self.affine1(x)
-        return F.tanh(action_scores)
+        return F.softmax(action_scores, dim=1)
 
     def select_action(self, state):
         # Convert the state to feature
