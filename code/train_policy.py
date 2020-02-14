@@ -68,13 +68,13 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         # Perform the gradient update for the current episode
         perform_update(policy,step_size,gamma)
 
-        norm_0 = np.linalg.norm(policy.weights)
+        norm = np.linalg.norm(policy.weights)
         weight_0 = policy.weights[50,0]
         weight_1 = policy.weights[50,1]
 
         if i % log_interval == 0:
-            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}".format(
-                i, ep_reward, running_reward))
+            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.2f}\tWeights: {:.2f} {:.2f}".format(
+                i, ep_reward, running_reward, norm, weight_0, weight_1))
 
     policy.save()
 
@@ -116,13 +116,10 @@ def perform_update(policy, step_size, gamma=0.9):
     num_steps = len(returns)
     returns = [x * gamma**(num_steps) for x in returns]
 
-    print(len(policy.saved_log_probs))
-    print(len(policy.saved_log_probs[0]))
-
     # Update the weights of the policy
     for i in range(num_steps):
-        #print('length of non zero 2-tuple {}'.format(np.sum(np.array([1 if x.any() != 0 else 0 for x in policy.saved_log_probs[i]]))))
-        #print(len(policy.saved_log_probs[i]))
-        #print(len(policy.saved_log_probs[i][0]))
-        #print(policy.saved_log_probs[i])
         policy.weights = policy.weights + step_size * returns[i] * policy.saved_log_probs[i]
+
+    # delete the probabilities and rewards
+    del policy.saved_log_probs[:]
+    del policy.rewards[:]
