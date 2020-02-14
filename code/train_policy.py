@@ -73,13 +73,16 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         weight_1 = policy.weights[50,1]
 
         if i % log_interval == 0:
-            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.2f}\tWeights: {:.2f} {:.2f}".format(
+            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
                 i, ep_reward, running_reward, norm, weight_0, weight_1))
+        # Stopping criteria
+        if running_reward > env.spec.reward_threshold:
+            print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, i))
+            break
 
     policy.save()
 
-
-    # Plot the running average results only for the different settings
+    # Plot the running average results
     fig = plt.figure(0, figsize=(20, 8))
     plt.rcParams.update({'font.size': 18})
 
@@ -106,11 +109,18 @@ def perform_update(policy, step_size, gamma=0.9):
     G = 0
     returns = []
 
-    
     # Go through the list of observed rewards and calculate the returns
     for r in policy.rewards[::-1]:
         G = r + gamma * G
         returns.insert(0, G)
+
+    # Define a small float which is used to avoid divison by zero
+    eps = np.finfo(np.float32).eps.item()
+    # Normalize returns by subtracting the mean and dividing by the standard deviation
+    arr = np.array(returns)
+    mean = arr.mean()
+    std = arr.std()
+    returns = [(x - mean) / (std + eps) for x in returns]
 
     # Multiply returns by Gamma to the power of T
     num_steps = len(returns)
@@ -123,3 +133,4 @@ def perform_update(policy, step_size, gamma=0.9):
     # delete the probabilities and rewards
     del policy.saved_log_probs[:]
     del policy.rewards[:]
+
