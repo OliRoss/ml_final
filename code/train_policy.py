@@ -2,13 +2,6 @@ import numpy as np
 import gym
 import random
 
-from LFAPolicyAgent import LFAPolicy
-
-import itertools
-from itertools import count
-import matplotlib.pyplot as plt
-from tqdm import trange
-
 # Initialize the environment
 env = gym.make('LunarLanderContinuous-v2')
 
@@ -53,6 +46,10 @@ def reinforce(policy, step_size, render=False):
             # Store the reward
             policy.rewards.append(reward)
 
+            # stop episode if done
+            if done:
+                break
+
         # Perform the gradient update for the current episode
         perform_update(policy,step_size)
         
@@ -76,12 +73,12 @@ def perform_update(policy, step_size):
     
     # Go through the list of observed rewards and calculate the returns
     for r in policy.rewards[::-1]:
-        G = r + gamma * G
+        G = r + GAMMA * G
         returns.insert(0, G)
 
     # Multiply returns by Gamma to the power of T
     num_steps = len(returns)
-    returns = returns * GAMMA**(num_steps)
+    returns = [x * GAMMA**(num_steps) for x in returns]
 
     # Update the weights of the policy 
     for i in range(num_steps):
