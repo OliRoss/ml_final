@@ -1,7 +1,6 @@
 import numpy as np
 
 STDDEV = 1
-GAMMA = 0.9
 LEARNING_RATE = 5e-2
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import gym
 import random
+import matplotlib as plt
 
 # Initialize the environment
 env = gym.make('LunarLanderContinuous-v2')
@@ -72,6 +73,23 @@ def reinforce(policy, step_size, render=False):
         if i % LOG_INTERVAL == 0:
             print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}".format(
                 i, ep_reward, running_reward))
+
+    policy.save()
+
+
+    # Plot the running average results only for the different settings
+    fig = plt.figure(0, figsize=(20, 8))
+    plt.rcParams.update({'font.size': 18})
+
+    hp = {'name': 'linearFA', 'GAMMA': 0.9, 'poly_degree': 1, 'learning_rate': 5e-2}
+    label_str = hp['name'] + '($\gamma$:' + str(hp['gamma']) + ',poly:' + str(hp['poly_degree']) + ',lr:' + str(
+        hp['learning_rate']) + ')'
+    plt.plot(range(len(running_rewards)), running_rewards, lw=2, color=np.random.rand(3, ), label=label_str)
+    plt.grid()
+    plt.xlabel('Episodes')
+    plt.ylabel('Running average of Rewards')
+    plt.legend()
+    plt.show()
         
 
 def perform_update(policy, step_size):
