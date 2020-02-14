@@ -72,6 +72,8 @@ def reinforce(policy, step_size, render=False):
         if i % LOG_INTERVAL == 0:
             print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}".format(
                 i, ep_reward, running_reward))
+
+    policy.save()
         
 
 def perform_update(policy, step_size):
