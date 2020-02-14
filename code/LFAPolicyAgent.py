@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 STDDEV = 1
 LEARNING_RATE = 5e-2
@@ -9,6 +10,8 @@ class LFAPolicy:
 
         # Degree of the polynomial feature
         self.poly_degree = poly_degree
+        # calculate and store the c vector from Sutton and Burato p. 211
+        self.c_vector = LFAPolicy.calc_c(self.poly_degree)
 
         # Initialize the weight matrix
         # The number of states is fixed to 8 and the number of
@@ -20,7 +23,27 @@ class LFAPolicy:
         self.rewards = []
 
     @staticmethod
-    def poly_features(state, n):
+    def calc_c(poly_degree):
+        '''
+        Computes the c vector from Sutton and Burato p. 211
+
+        :param poly_degree: polynomial degree
+        :return: vector with the components for the polynomial feature function
+        '''
+        c = np.zeros(((poly_degree + 1) ** 8, 8))
+        num = 0
+        for pos in range(8):
+            for row in range((poly_degree + 1) ** 8):
+                c[row][pos] = num
+                if (row + 1) % ((poly_degree + 1) ** pos) == 0:
+                    if num < poly_degree:
+                        num += 1
+                    else:
+                        num = 0
+
+        return c
+
+    def poly_features(self, state, n):
         '''
         Computes the polynomial feature vector from the input states
 
@@ -29,27 +52,18 @@ class LFAPolicy:
         :return: feature vector phi consisting of (n+1)^k elements (1D numpy array)
         '''
 
-        k = state.shape[0]
-        phi = np.zeros((n + 1) ** k)
-
-        # calculate the c-vectors from Sutton and Burato p. 211
-        c = np.zeros(((n + 1) ** k, k))
-        num = 0
-        for pos in range(k):
-            for row in range((n + 1) ** k):
-                c[row][pos] = num
-                if (row + 1) % ((n + 1) ** pos) == 0:
-                    if num < n:
-                        num += 1
-                    else:
-                        num = 0
+        start = time.time()
+        phi = np.zeros((n + 1) ** 8)
 
         # calculate the feature vector phi
         for i in range(len(phi)):
             phi[i] = 1
-            for j in range(k):
-                phi[i] *= (state[j] ** c[i][j])
+            for j in range(8):
+                phi[i] *= (state[j] ** self.c_vector[i][j])
 
+        end = time.time()
+
+        print('time elapsed: {:.8f}'.format(end-start))
         return phi
 
     def select_action(self, state):
