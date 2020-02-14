@@ -24,7 +24,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     '''
     print("render: {}".format(render))
     # To track the reward across consecutive episodes (smoothed)
-    running_reward = 1.0
+    running_reward = -250
 
     # Lists to store the episodic and running rewards for plotting
     ep_rewards = list()
