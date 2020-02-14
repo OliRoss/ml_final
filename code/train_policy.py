@@ -7,7 +7,7 @@ env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
 RANDOM_SEED = 123
-LOG_INTERVAL = 100
+LOG_INTERVAL = 1
 NUM_EPISODES = 100
 GAMMA = 0.9
 
@@ -53,7 +53,7 @@ def reinforce(policy, step_size, render=False):
         # Perform the gradient update for the current episode
         perform_update(policy,step_size)
         
-        if i % 100 == 0:
+        if i % LOG_INTERVAL == 0:
             print("Finished episode {}".format(i))
         
 
@@ -64,7 +64,6 @@ def perform_update(policy, step_size):
     :param: policy: LFAPolicy object to be trained
     :param: step_size: step size of the gradient descent
     '''
-
 
     # Variable for the current return
     G = 0
