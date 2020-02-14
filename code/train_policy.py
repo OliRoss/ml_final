@@ -24,12 +24,18 @@ def reinforce(policy, step_size, render=False):
     :param: step_size: step size of the gradient descent
     :param: render: wether or not to render the environment
     '''
+    # To track the reward across consecutive episodes (smoothed)
+    running_reward = 1.0
+
+    # Lists to store the episodic and running rewards for plotting
+    ep_rewards = list()
+    running_rewards = list()
 
     # Generate episodes:
     for i in range(NUM_EPISODES):
 
         # Reset reward and state:
-        reward, state = 0, env.reset()
+        ep_reward, state = 0, env.reset()
 
         # For each step
         for t in range (1, 10000):
@@ -46,15 +52,26 @@ def reinforce(policy, step_size, render=False):
             # Store the reward
             policy.rewards.append(reward)
 
+            # Track the total reward in this episode
+            ep_reward += reward
+
             # stop episode if done
             if done:
                 break
+
+        # Update the running reward
+        running_reward = 0.05 * ep_reward + (1 - 0.05) * running_reward
+
+        # Store the rewards for plotting
+        ep_rewards.append(ep_reward)
+        running_rewards.append(running_reward)
 
         # Perform the gradient update for the current episode
         perform_update(policy,step_size)
         
         if i % LOG_INTERVAL == 0:
-            print("Finished episode {}".format(i))
+            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}".format(
+                i, ep_reward, running_reward))
         
 
 def perform_update(policy, step_size):
