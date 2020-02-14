@@ -86,7 +86,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     fig = plt.figure(0, figsize=(20, 8))
     plt.rcParams.update({'font.size': 18})
 
-    hp = {'name': 'linearFA', 'gamma': 0.9, 'poly_degree': 1, 'learning_rate': 5e-2}
+    hp = {'name': 'linearFA', 'gamma': gamma, 'poly_degree': policy.poly_degree, 'learning_rate': step_size}
     label_str = hp['name'] + '($\gamma$:' + str(hp['gamma']) + ',poly:' + str(hp['poly_degree']) + ',lr:' + str(
         hp['learning_rate']) + ')'
     plt.plot(range(len(running_rewards)), running_rewards, lw=2, color=np.random.rand(3, ), label=label_str)
