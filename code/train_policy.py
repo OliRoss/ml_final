@@ -8,16 +8,13 @@ env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
 RANDOM_SEED = 123
-LOG_INTERVAL = 1
-NUM_EPISODES = 100
-GAMMA = 0.9
 
 # Set seeds for reproducability
 random.seed(RANDOM_SEED)
 env.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 
-def reinforce(policy, step_size, render=False):
+def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_interval=1):
     '''
     Implements the REINFORCE algorithm.
     
@@ -25,6 +22,7 @@ def reinforce(policy, step_size, render=False):
     :param: step_size: step size of the gradient descent
     :param: render: wether or not to render the environment
     '''
+    print("render: {}".format(render))
     # To track the reward across consecutive episodes (smoothed)
     running_reward = 1.0
 
@@ -33,7 +31,7 @@ def reinforce(policy, step_size, render=False):
     running_rewards = list()
 
     # Generate episodes:
-    for i in range(NUM_EPISODES):
+    for i in range(num_episodes):
 
         # Reset reward and state:
         ep_reward, state = 0, env.reset()
@@ -47,7 +45,7 @@ def reinforce(policy, step_size, render=False):
             # Perform action and observe state + reward
             state, reward, done, _ = env.step(np.array([action_0,action_1]))
 
-            if render:
+            if render == "True":
                 env.render()
 
             # Store the reward
@@ -68,15 +66,15 @@ def reinforce(policy, step_size, render=False):
         running_rewards.append(running_reward)
 
         # Perform the gradient update for the current episode
-        perform_update(policy,step_size)
+        perform_update(policy,step_size,gamma)
 
         norm_0 = np.linalg.norm(policy.weights)
         weight_0 = policy.weights[50,0]
         weight_1 = policy.weights[50,1]
-        
-        if i % LOG_INTERVAL == 0:
-            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}\tNorm: {:.2f} \tWeights: {:.2f} {:.2f}".format(
-                i, ep_reward, running_reward, norm_0, weight_0, weight_1))
+
+        if i % log_interval == 0:
+            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}".format(
+                i, ep_reward, running_reward))
 
     policy.save()
 
@@ -96,7 +94,7 @@ def reinforce(policy, step_size, render=False):
     plt.show()
         
 
-def perform_update(policy, step_size):
+def perform_update(policy, step_size, gamma=0.9):
     '''
     Performs the gradient ascent update for one episode in the REINFORCE algorithm.
 
@@ -111,17 +109,17 @@ def perform_update(policy, step_size):
     
     # Go through the list of observed rewards and calculate the returns
     for r in policy.rewards[::-1]:
-        G = r + GAMMA * G
+        G = r + gamma * G
         returns.insert(0, G)
 
     # Multiply returns by Gamma to the power of T
     num_steps = len(returns)
-    returns = [x * GAMMA**(num_steps) for x in returns]
+    returns = [x * gamma**(num_steps) for x in returns]
 
     print(len(policy.saved_log_probs))
     print(len(policy.saved_log_probs[0]))
 
-    # Update the weights of the policy 
+    # Update the weights of the policy
     for i in range(num_steps):
         #print('length of non zero 2-tuple {}'.format(np.sum(np.array([1 if x.any() != 0 else 0 for x in policy.saved_log_probs[i]]))))
         #print(len(policy.saved_log_probs[i]))
