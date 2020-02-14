@@ -10,8 +10,6 @@ class LFAPolicy:
 
         # Degree of the polynomial feature
         self.poly_degree = poly_degree
-        # calculate and store the c vector from Sutton and Burato p. 211
-        self.c_vector = LFAPolicy.calc_c(self.poly_degree)
 
         # Initialize the weight matrix
         # The number of states is fixed to 8 and the number of
@@ -22,28 +20,8 @@ class LFAPolicy:
         self.saved_log_probs = []
         self.rewards = []
 
-    @staticmethod
-    def calc_c(poly_degree):
-        '''
-        Computes the c vector from Sutton and Burato p. 211
 
-        :param poly_degree: polynomial degree
-        :return: vector with the components for the polynomial feature function
-        '''
-        c = np.zeros(((poly_degree + 1) ** 8, 8))
-        num = 0
-        for pos in range(8):
-            for row in range((poly_degree + 1) ** 8):
-                c[row][pos] = num
-                if (row + 1) % ((poly_degree + 1) ** pos) == 0:
-                    if num < poly_degree:
-                        num += 1
-                    else:
-                        num = 0
-
-        return c
-
-    def poly_features(self, state, n):
+    def poly_features(self, state):
         '''
         Computes the polynomial feature vector from the input states
 
@@ -52,18 +30,24 @@ class LFAPolicy:
         :return: feature vector phi consisting of (n+1)^k elements (1D numpy array)
         '''
 
-        start = time.time()
-        phi = np.zeros((n + 1) ** 8)
+        phi = np.zeros((self.poly_degree + 1) ** 8)
 
-        # calculate the feature vector phi
-        for i in range(len(phi)):
-            phi[i] = 1
-            for j in range(8):
-                phi[i] *= (state[j] ** self.c_vector[i][j])
+        c = np.arange(0, self.poly_degree + 1)
+        i = 0
 
-        end = time.time()
+        for p0 in c:
+            for p1 in c:
+                for p2 in c:
+                    for p3 in c:
+                        for p4 in c:
+                            for p5 in c:
+                                for p6 in c:
+                                    for p7 in c:
+                                        phi[i] = (state[0] ** p0) * (state[1] ** p1) * (state[2] ** p2) * (
+                                                state[3] ** p3) * (state[4] ** p4) * (state[5] ** p5) * (
+                                                         state[6] ** p6) * (state[7] ** p7)
+                                        i += 1
 
-        print('time elapsed: {:.8f}'.format(end-start))
         return phi
 
     def select_action(self, state):
@@ -76,7 +60,7 @@ class LFAPolicy:
         '''
 
         # Compute feature vector
-        feature_vector = self.poly_features(state, self.poly_degree)
+        feature_vector = self.poly_features(state)
         
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
