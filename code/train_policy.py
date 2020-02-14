@@ -8,7 +8,7 @@ env = gym.make('LunarLanderContinuous-v2')
 # Define hyperparameters
 RANDOM_SEED = 123
 LOG_INTERVAL = 1
-NUM_EPISODES = 100
+NUM_EPISODES = 1000
 GAMMA = 0.9
 
 # Set seeds for reproducability
