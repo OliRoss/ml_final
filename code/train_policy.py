@@ -73,7 +73,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         weight_1 = policy.weights[50,1]
 
         if i % log_interval == 0:
-            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.2f}\tWeights: {:.2f} {:.2f}".format(
+            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
                 i, ep_reward, running_reward, norm, weight_0, weight_1))
 
     policy.save()
