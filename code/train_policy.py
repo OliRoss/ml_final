@@ -2,6 +2,7 @@ import numpy as np
 import gym
 import random
 import matplotlib.pyplot as plt
+import time
 
 # Initialize the environment
 env = gym.make('LunarLanderContinuous-v2')
@@ -36,6 +37,8 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         # Reset reward and state:
         ep_reward, state = 0, env.reset()
 
+        start = time.time()
+
         # For each step
         for t in range (1, 10000):
 
@@ -65,6 +68,8 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         ep_rewards.append(ep_reward)
         running_rewards.append(running_reward)
 
+        start2 = time.time()
+
         # Perform the gradient update for the current episode
         perform_update(policy,step_size,gamma)
 
@@ -72,12 +77,18 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         weight_0 = policy.weights[50,0]
         weight_1 = policy.weights[50,1]
 
+        end = time.time()
+
         if i % log_interval == 0:
-            print("Finished episode {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
-                i, ep_reward, running_reward, norm, weight_0, weight_1))
+            print("Finished episode {} in {:.2f}/{:.2f} seconds\tSteps: {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
+                i, end - start, end - start2, t, ep_reward, running_reward, norm, weight_0, weight_1))
         # Stopping criteria
         if running_reward > env.spec.reward_threshold:
-            print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, i))
+            print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
+            break
+        # Stopping criteria
+        if norm > 100000000000:
+            print('Norm explodes. Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break
 
     policy.save()

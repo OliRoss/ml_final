@@ -7,6 +7,7 @@
 * "Evaluate"-Methode für Agent (ohne Gauß-sampeln)
 * Comparison Methode für die Agents schreiben
 * Policy-Training mit 5000 Episoden, Gamma = 0.9, step_size = 0.03
+        for poly_degree = 2 explodes starting from episode 130 ...
 
 ## Oli
 
