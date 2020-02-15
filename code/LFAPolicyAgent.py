@@ -1,5 +1,4 @@
 import numpy as np
-import time
 
 STDDEV = 1
 LEARNING_RATE = 5e-2
