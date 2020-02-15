@@ -61,7 +61,7 @@ class LFAPolicy:
 
         # Compute feature vector
         feature_vector = self.poly_features(state)
-        
+
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
 
@@ -78,14 +78,16 @@ class LFAPolicy:
         # Compute log prob for given state and actions
         factor = (np.array([action_0,action_1]) - output_units)/(STDDEV**2)
         self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector]).T)
-        
+
         return action_0, action_1
 
     def save(self, state_file='models/LFAPolicy.npy'):
         # Save the weight matrix to file 
         np.save(state_file, self.weights)
+        print('Policy saved at ' + state_file)
 
     def load(self, state_file='models/LFAPolicy.npy'):
         # Load the weight matrix from file
         self.weights = np.load(state_file)
+        print('Policy loaded from ' + state_file)
 
