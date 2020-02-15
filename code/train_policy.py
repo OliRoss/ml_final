@@ -125,6 +125,8 @@ def perform_update(policy, step_size, gamma=0.9):
         G = r + gamma * G
         returns.insert(0, G)
 
+    average_reward = np.mean(policy.rewards)
+
     # Define a small float which is used to avoid divison by zero
     eps = np.finfo(np.float32).eps.item()
     # Normalize returns by subtracting the mean and dividing by the standard deviation
@@ -139,7 +141,12 @@ def perform_update(policy, step_size, gamma=0.9):
 
     # Update the weights of the policy
     for i in range(num_steps):
+
+        # Gradient step without baseline
         policy.weights = policy.weights + step_size * returns[i] * policy.saved_log_probs[i]
+
+        # Gradient step with baseline
+        # policy.weights = policy.weights + step_size * (returns[i]-average_reward) * policy.saved_log_probs[i]
 
     # delete the probabilities and rewards
     del policy.saved_log_probs[:]
