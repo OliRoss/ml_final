@@ -1,6 +1,7 @@
 import numpy as np
 import gym
 
+#STDDEV = np.exp(-.5)
 STDDEV = 1
 LEARNING_RATE = 5e-2
 
@@ -103,6 +104,13 @@ class LFAPolicy:
         return output_units[0], output_units[1]
 
     def evaluate(self,num_episodes):
+        '''
+        Function for evaluating the Policy using deterministic action selection used
+        for comparison between the policy and an random agent.
+
+        :param num_episodes: the number of episode to be evaluated
+        :return: list of rewards per episode
+        '''
 
         env = gym.make('LunarLanderContinuous-v2')
         rewards = []
@@ -113,20 +121,30 @@ class LFAPolicy:
             while True:
                 action = self.select_action_deterministic(observation)
                 observation, reward, done, info = env.step(action)
-                # You can comment the below line for faster execution
                 # env.render()
                 episode_reward += reward
                 if done:
                     rewards.append(episode_reward)
                     break
+
         return rewards
 
     def save(self, state_file='models/LFAPolicy.npy'):
+        '''
+        Function for saving the weight matrix to .npy-file
+
+        :param state_file: file name
+        '''
         # Save the weight matrix to file 
         np.save(state_file, self.weights)
         print('Policy saved at ' + state_file)
 
     def load(self, state_file='models/LFAPolicy.npy'):
+        '''
+        Function for loading a weight matrix
+
+        :param state_file: file name
+        '''
         # Load the weight matrix from file
         self.weights = np.load(state_file)
         print('Policy loaded from ' + state_file)

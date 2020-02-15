@@ -1,3 +1,4 @@
+import sys
 import LFAPolicyAgent
 import train_policy
 import argparse
@@ -15,6 +16,7 @@ parser.add_argument('num_episodes', metavar='num_episodes', type=int, nargs=1, h
                     action='store')
 parser.add_argument('log_interval', metavar='log_interval', type=int, nargs=1, help='how many episodes to wait between print logs',
                     action='store')
+parser.add_argument('-f', action="store", dest="file", help="loads a pre trained model if given and trains that model")
 args = parser.parse_args()
 
 gamma = args.gamma[0]
@@ -23,8 +25,13 @@ render = args.render[0]
 step_size = args.step_size[0]
 num_episodes = args.num_episodes[0]
 log_interval = args.log_interval[0]
+file = args.file
 
-print("Params: {} {} {} {} {}".format(gamma,poly_degree,render,step_size, num_episodes))
+print("Params: {} {} {} {} {} {}".format(gamma,poly_degree,render,step_size, num_episodes, file))
 
 policy = LFAPolicyAgent.LFAPolicy(poly_degree)
+if file is not None:
+    policy.load(file)
+    if len(policy.weights) != (policy.poly_degree + 1)**8:
+        raise ValueError('The given polynomial degree is not compatible with the loaded weight matrix')
 train_policy.reinforce(policy, step_size, render,num_episodes, gamma, log_interval)
