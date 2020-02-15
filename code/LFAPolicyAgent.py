@@ -1,5 +1,5 @@
 import numpy as np
-import time
+import gym
 
 STDDEV = 1
 LEARNING_RATE = 5e-2
@@ -53,7 +53,8 @@ class LFAPolicy:
     def select_action(self, state):
         ''' 
         Selects an action from the given observed state, by using
-        the policy.
+        the policy. It samples from a gaussian that is output by the
+        linear function approximater.
 
         :param: state: Input state vector of size 8 (1D numpy array)
         :return: Continuous action vector of size 2 (1D numpy array)
@@ -80,6 +81,45 @@ class LFAPolicy:
         self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector]).T)
 
         return action_0, action_1
+
+    def select_action_deterministic(self,state):
+        '''
+        Selects an action from the given observed state, by using
+        the policy. It doesn't sample, but instead always chooses
+        the mean output by the LFA, making it deterministic. It only
+        exploits the learned policy without any exploration.
+
+        :param: state: Input state vector of size 8 (1D numpy array)
+        :return: Continuous action vector of size 2 (1D numpy array)
+        '''
+
+        # Compute feature vector
+        feature_vector = self.poly_features(state)
+
+        # Multiply feature vector with weight vector
+        output_units = feature_vector.T @ self.weights
+
+        # Return the computed actions
+        return output_units[0], output_units[1]
+
+    def evaluate(self,num_episodes):
+
+        env = gym.make('LunarLanderContinuous-v2')
+        rewards = []
+
+        for episode in range(num_episodes):
+            observation = env.reset()
+            episode_reward = 0
+            while True:
+                action = self.select_action_deterministic(observation)
+                observation, reward, done, info = env.step(action)
+                # You can comment the below line for faster execution
+                # env.render()
+                episode_reward += reward
+                if done:
+                    rewards.append(episode_reward)
+                    break
+        return rewards
 
     def save(self, state_file='models/LFAPolicy.npy'):
         # Save the weight matrix to file 
