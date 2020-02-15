@@ -77,6 +77,7 @@ class NNPolicy(nn.Module):
 
         # Save the model state
         torch.save(self.state_dict(), state_file)
+        print('Policy saved at ' + state_file)
 
     @staticmethod
     def load(state_file='models/policy_network.pt'):
@@ -91,6 +92,7 @@ class NNPolicy(nn.Module):
         policy = NNPolicy()
         # Load the weights
         policy.load_state_dict(torch.load(state_file))
+        print('Policy loaded from ' + state_file)
         # Set the network to evaluation mode
         policy.eval()
         return policy
