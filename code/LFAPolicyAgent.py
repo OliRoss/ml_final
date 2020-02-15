@@ -1,6 +1,7 @@
 import numpy as np
 import gym
 
+#STDDEV = np.exp(-.5)
 STDDEV = 1
 LEARNING_RATE = 5e-2
 
