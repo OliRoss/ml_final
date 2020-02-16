@@ -9,7 +9,7 @@ from datetime import datetime
 env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
-RANDOM_SEED = 123
+RANDOM_SEED = random.randint(100,100000000)
 SAVE_INTERVAL = 1
 
 # Set seeds for reproducability
