@@ -16,9 +16,11 @@ class NNPolicy(nn.Module):
         else:
             self.random_seed = 123
 
-        self.affine1 = nn.Linear(8, 100)
-        self.affine2 = nn.Linear(100, 100)
-        self.affine3 = nn.Linear(100, 2)
+        self.affine1 = nn.Linear(8, 512)
+        self.dropout1 = nn.Dropout(p=.8)
+        self.affine2 = nn.Linear(512, 128)
+        self.dropout2 = nn.Dropout(p=.8)
+        self.affine3 = nn.Linear(128, 2)
 
         self.activation = nn.Tanh()
 
@@ -33,8 +35,8 @@ class NNPolicy(nn.Module):
         :return: Output of the neural network
         '''
 
-        x = F.relu(self.affine1(x))
-        x = F.relu(self.affine2(x))
+        x = F.relu(self.dropout1(self.affine1(x)))
+        x = F.relu(self.dropout2(self.affine2(x)))
         x = self.activation(self.affine3(x))
 
         return x
