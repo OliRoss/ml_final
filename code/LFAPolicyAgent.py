@@ -115,10 +115,15 @@ class LFAPolicy:
         :return: list of rewards per episode
         '''
 
+
         env = gym.make('LunarLanderContinuous-v2')
         rewards = []
+        i = 0
 
         for episode in range(num_episodes):
+            if i % 10 == 0:
+                print("LFA Policy: Evaluating episode #{}".format(i))
+            i = i + 1
             observation = env.reset()
             episode_reward = 0
             while True:
