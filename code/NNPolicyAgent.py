@@ -86,7 +86,7 @@ class NNPolicy(nn.Module):
         '''
 
         # Save the model state
-        torch.save(self.state_dict(), state_file)
+        torch.save(self.state_dict(), state_file + '.pt')
         print('Policy saved at ' + state_file)
 
     @staticmethod

@@ -15,7 +15,7 @@ env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
 RANDOM_SEED = 123
-SAVE_INTERVAL = 1
+SAVE_INTERVAL = 50
 
 # Set seeds for reproducability
 random.seed(RANDOM_SEED)
@@ -76,13 +76,18 @@ def reinforce(policy, learning_rate=False,render=False, num_episodes=100, gamma=
             print('Finished episode {}\tEpisode reward: {:.2f}\tAverage reward: {:.2f}'.format(i_episode, ep_reward, running_reward))
         # save if running reward improved over all running rewards
         if running_reward > best_running_reward:
-            policy.save()
+            policy.save(policy.file_name + '_best')
             best_running_reward = running_reward
+        # save after every 50 episodes
+        if i_episode % SAVE_INTERVAL == 0:
+            policy.save(policy.file_name + '_regular')
         # Stopping criteria
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break
 
+    # save last policy
+    policy.save(policy.file_name + '_regular')
 
     # Plot the running average results
     fig = plt.figure(0, figsize=(20, 8))
@@ -167,8 +172,8 @@ def train(policy, step_size, render, num_episodes, gamma, log_interval, random_s
     set_random_seed(random_seed)
 
     # set the file  name of the model
-    file_str = 'models/' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(
-        num_episodes) + '_' + str(gamma) + '_' + str(policy.poly_degree) + '_' + str(policy.random_seed)
+    file_str = 'models/NN' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(
+        num_episodes) + '_' + str(gamma) + '_' + str(policy.random_seed)
     policy.file_name = file_str
 
     # start the training

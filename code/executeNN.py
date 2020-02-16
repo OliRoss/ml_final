@@ -31,4 +31,4 @@ print("Params: {} {} {} {} {}".format(gamma,render,learning_rate, num_episodes, 
 
 policy = NNPolicyAgent.NNPolicy(random_seed)
 
-train_policy_NN.reinforce(policy, learning_rate, render, num_episodes, gamma, log_interval)
+train_policy_NN.train(policy, learning_rate, render, num_episodes, gamma, log_interval, random_seed)
