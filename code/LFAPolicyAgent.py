@@ -2,7 +2,7 @@ import numpy as np
 import gym
 
 #STDDEV = np.exp(-.5)
-STDDEV = 1
+STDDEV = 0.3
 LEARNING_RATE = 5e-2
 
 
@@ -20,6 +20,9 @@ class LFAPolicy:
 
         self.saved_log_probs = []
         self.rewards = []
+
+        # file name of the weight matrix
+        self.file_name = ''
 
 
     def poly_features(self, state):
@@ -129,15 +132,15 @@ class LFAPolicy:
 
         return rewards
 
-    def save(self, state_file='models/LFAPolicy.npy'):
+    def save(self):
         '''
         Function for saving the weight matrix to .npy-file
 
         :param state_file: file name
         '''
         # Save the weight matrix to file 
-        np.save(state_file, self.weights)
-        print('Policy saved at ' + state_file)
+        np.save(self.file_name, self.weights)
+        print('Policy saved at ' + self.file_name)
 
     def load(self, state_file='models/LFAPolicy.npy'):
         '''
