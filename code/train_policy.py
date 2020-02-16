@@ -28,6 +28,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     print("render: {}".format(render))
     # To track the reward across consecutive episodes (smoothed)
     running_reward = -250
+    best_running_reward = -250
 
     # Lists to store the episodic and running rewards for plotting
     ep_rewards = list()
@@ -70,8 +71,6 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         ep_rewards.append(ep_reward)
         running_rewards.append(running_reward)
 
-        start2 = time.time()
-
         # Perform the gradient update for the current episode
         perform_update(policy,step_size,gamma)
 
@@ -82,11 +81,12 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         end = time.time()
 
         if i % log_interval == 0:
-            print("Finished episode {} in {:.2f}/{:.2f} seconds\tSteps: {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
-                i, end - start, end - start2, t, ep_reward, running_reward, norm, weight_0, weight_1))
+            print("Finished episode {} in {:.2f} seconds\tSteps: {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
+                i, end - start, t, ep_reward, running_reward, norm, weight_0, weight_1))
         # Stopping criteria
-        if i % SAVE_INTERVAL == 0:
+        if running_reward > best_running_reward:
             policy.save()
+            best_running_reward = running_reward
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break
@@ -110,7 +110,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     plt.xlabel('Episodes')
     plt.ylabel('Running average of Rewards')
     plt.legend()
-    plt.savefig(file_str)
+    plt.savefig('logs/' + file_str)
     plt.show()
         
 
@@ -158,3 +158,7 @@ def perform_update(policy, step_size, gamma=0.9):
     del policy.saved_log_probs[:]
     del policy.rewards[:]
 
+def train(policy, step_size, render,num_episodes, gamma, log_interval):
+    file_str = 'models/' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(num_episodes) + '_' + str(gamma) + '_' + str(policy.poly_degree)
+    policy.file_name = file_str
+    reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
