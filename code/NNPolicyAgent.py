@@ -1,5 +1,6 @@
 import numpy as np
 
+import gym
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -97,3 +98,28 @@ class NNPolicy(nn.Module):
         policy.eval()
         return policy
 
+    def evaluate(self,num_episodes):
+        '''
+        Function for evaluating the Policy using deterministic action selection used
+        for comparison between the policy and an random agent.
+
+        :param num_episodes: the number of episode to be evaluated
+        :return: list of rewards per episode
+        '''
+
+        env = gym.make('LunarLanderContinuous-v2')
+        rewards = []
+
+        for episode in range(num_episodes):
+            observation = env.reset()
+            episode_reward = 0
+            while True:
+                _,action,_ = self.gaussian_policy(observation)
+                observation, reward, done, info = env.step(np.array([action[0][0], action[0][1]]))
+                # env.render()
+                episode_reward += reward
+                if done:
+                    rewards.append(episode_reward)
+                    break
+
+        return rewards
