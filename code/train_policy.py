@@ -86,6 +86,9 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         if i % SAVE_INTERVAL == 0:
             policy.save(policy.file_name + '_regular')
             np.savetxt(policy.file_name + '_regular_ep_rewards.csv', ep_rewards, delimiter=",")
+        if i % 500 == 0:
+            policy.save(policy.file_name + '_save500')
+            np.savetxt(policy.file_name + '_save500_ep_rewards.csv', ep_rewards, delimiter=",")
         # Stopping criteria
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
