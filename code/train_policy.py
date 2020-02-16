@@ -3,12 +3,14 @@ import gym
 import random
 import matplotlib.pyplot as plt
 import time
+from datetime import datetime
 
 # Initialize the environment
 env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
 RANDOM_SEED = 123
+SAVE_INTERVAL = 1
 
 # Set seeds for reproducability
 random.seed(RANDOM_SEED)
@@ -83,6 +85,8 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
             print("Finished episode {} in {:.2f}/{:.2f} seconds\tSteps: {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
                 i, end - start, end - start2, t, ep_reward, running_reward, norm, weight_0, weight_1))
         # Stopping criteria
+        if i % SAVE_INTERVAL == 0:
+            policy.save()
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break
@@ -98,13 +102,15 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     plt.rcParams.update({'font.size': 18})
 
     hp = {'name': 'linearFA', 'gamma': gamma, 'poly_degree': policy.poly_degree, 'learning_rate': step_size}
-    label_str = hp['name'] + '($\gamma$:' + str(hp['gamma']) + ',poly:' + str(hp['poly_degree']) + ',lr:' + str(
+    label_str = hp['name'] + '(gamma:' + str(hp['gamma']) + ',poly:' + str(hp['poly_degree']) + ',lr:' + str(
         hp['learning_rate']) + ')'
+    file_str = label_str + datetime.now().strftime("_%d_%m_%H:%M") + '.png'
     plt.plot(range(len(running_rewards)), running_rewards, lw=2, color=np.random.rand(3, ), label=label_str)
     plt.grid()
     plt.xlabel('Episodes')
     plt.ylabel('Running average of Rewards')
     plt.legend()
+    plt.savefig(file_str)
     plt.show()
         
 
