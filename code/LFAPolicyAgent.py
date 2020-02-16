@@ -136,7 +136,7 @@ class LFAPolicy:
             while True:
                 action = self.select_action_deterministic(observation)
                 observation, reward, done, info = env.step(action)
-                env.render()
+                # env.render()
                 episode_reward += reward
                 if done:
                     rewards.append(episode_reward)

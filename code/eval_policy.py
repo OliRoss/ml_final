@@ -6,7 +6,7 @@ import gym
 import matplotlib.pyplot as plt
 from _datetime import datetime
 
-NUM_EPISODES = 200
+NUM_EPISODES = 100
 RANDOM_SEED = 123
 env = gym.make('LunarLanderContinuous-v2')
 
@@ -15,14 +15,14 @@ np.random.seed(RANDOM_SEED)
 
 # Create Agents
 random_policy = random_agent.random_policy()
-# lfa_policy_1 = LFAPolicyAgent.LFAPolicy(1)
-# lfa_policy_2 = LFAPolicyAgent.LFAPolicy(2)
-# lfa_policy_3 = LFAPolicyAgent.LFAPolicy(3)
-NN_policy = NNPolicyAgent.NNPolicy()
+# lfa_policy_1 = LFAPolicyAgent.LFAPolicy(1,RANDOM_SEED)
+#lfa_policy_2 = LFAPolicyAgent.LFAPolicy(2,RANDOM_SEED)
+# lfa_policy_3 = LFAPolicyAgent.LFAPolicy(3,RANDOM_SEED)
+NN_policy = NNPolicyAgent.NNPolicy(RANDOM_SEED)
 
 # Load models
 # lfa_policy_1.load()
-# lfa_policy_2.load("models/2020_02_15_params_09_002_2000_rnd_1234.npy")
+# lfa_policy_2.load()
 # lfa_policy_3.load()
 NN_policy.load()
 
@@ -60,9 +60,9 @@ plt.show()
 
 # Define file names
 file_str_random = 'logs/' + label_str_random + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
-# file_str_lfa_1 =  'logs/' +label_str_lfa_1 + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
-# file_str_lfa_2 =  'logs/' +label_str_lfa_2 + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
-# file_str_lfa_3 = 'logs/ +label_str_lfa_3 + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
+# file_str_lfa_1 =  'logs/' +label_str_1 + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
+# file_str_lfa_2 =  'logs/' +label_str_2 + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
+# file_str_lfa_3 = 'logs/ +label_str_3 + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
 file_str_nn = 'logs/' + label_str_nn + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
 
 # Save to file
