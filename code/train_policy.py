@@ -9,7 +9,7 @@ from datetime import datetime
 env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
-SAVE_INTERVAL = 1
+SAVE_INTERVAL = 50
 
 def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_interval=1):
     '''
@@ -79,8 +79,11 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
                 i, end - start, t, ep_reward, running_reward, norm, weight_0, weight_1))
         # save if running reward improved over all running rewards
         if running_reward > best_running_reward:
-            policy.save()
+            policy.save(policy.file_name + '_best')
             best_running_reward = running_reward
+        # save for all 50 episodes
+        if i % SAVE_INTERVAL == 0:
+            policy.save(policy.file_name + '_regular')
         # Stopping criteria
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
@@ -91,7 +94,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
                   'for {} steps!'.format(running_reward, t))
             break
 
-    policy.save()
+    policy.save(policy.file_name + '_regular')
 
     # Plot the running average results
     fig = plt.figure(0, figsize=(20, 8))
@@ -167,15 +170,18 @@ def train(policy, step_size, render,num_episodes, gamma, log_interval):
     :param log_interval: in what interval shall update infos be printed on comand line
     :return:
     '''
-    #set the random seed
-    set_random_seed(policy.random_seed)
+    try:
+        #set the random seed
+        set_random_seed(policy.random_seed)
 
-    # set the file  name of the model
-    file_str = 'models/' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(num_episodes) + '_' + str(gamma) + '_' + str(policy.poly_degree) + '_' + str(policy.random_seed)
-    policy.file_name = file_str
+        # set the file  name of the model
+        file_str = 'models/LFA' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(num_episodes) + '_' + str(gamma) + '_' + str(policy.poly_degree) + '_' + str(policy.random_seed)
+        policy.file_name = file_str
 
-    # start the training
-    reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
+        # start the training
+        reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
+    except KeyboardInterrupt:
+        policy.save(policy.file_name + '_interrupt')
 
 
 def set_random_seed(random_seed):

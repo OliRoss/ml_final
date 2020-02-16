@@ -144,7 +144,7 @@ class LFAPolicy:
 
         return rewards
 
-    def save(self):
+    def save(self, file_name):
         '''
         Function for saving the weight matrix to .npy-file
 
@@ -152,7 +152,7 @@ class LFAPolicy:
         '''
         # Save the weight matrix to file 
         np.save(self.file_name, self.weights)
-        print('Policy saved at ' + self.file_name)
+        print('Policy saved at ' + file_name)
 
     def load(self, state_file='models/LFAPolicy.npy'):
         '''
