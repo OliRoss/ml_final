@@ -83,10 +83,11 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
             print("Finished episode {} in {:.2f} seconds\tSteps: {}\tLast reward {:.2f}\t"
                   "Average reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
                 i, end - start, t, ep_reward, running_reward, norm, weight_0, weight_1))
-        # Stopping criteria
+        # save if running reward improved over all running rewards
         if running_reward > best_running_reward:
             policy.save()
             best_running_reward = running_reward
+        # Stopping criteria
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break

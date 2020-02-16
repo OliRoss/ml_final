@@ -28,7 +28,8 @@ def reinforce(policy, learning_rate=False,render=False, num_episodes=100, gamma=
     policy.train()
 
     # To track the reward across consecutive episodes (smoothed)
-    running_reward = -1250.0
+    running_reward = -250.0
+    best_running_reward = -250
 
     # Lists to store the episodic and running rewards for plotting
     ep_rewards = list()
@@ -47,9 +48,9 @@ def reinforce(policy, learning_rate=False,render=False, num_episodes=100, gamma=
             mu, action, log_prob = policy.gaussian_policy(state)
 
             # Perform the action and note the next state and reward
-            state, reward, done, _ = env.step(action)
+            state, reward, done, _ = env.step(np.array([action[0][0], action[0][1]]))
 
-            if render:
+            if render == True:
                 env.render()
 
             # Store the current reward
@@ -72,31 +73,32 @@ def reinforce(policy, learning_rate=False,render=False, num_episodes=100, gamma=
         perform_update(policy,learning_rate,gamma)
 
         if i_episode % log_interval == 0:
-            print(i_episode, ep_reward, running_reward)
-        # Stopping criteria
-        if i_episode % SAVE_INTERVAL == 0:
+            print('Finished episode {}\tEpisode reward: {:.2f}\tAverage reward: {:.2f}'.format(i_episode, ep_reward, running_reward))
+        # save if running reward improved over all running rewards
+        if running_reward > best_running_reward:
             policy.save()
+            best_running_reward = running_reward
+        # Stopping criteria
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break
 
 
-        # Plot the running average results
-        fig = plt.figure(0, figsize=(20, 8))
-        plt.rcParams.update({'font.size': 18})
+    # Plot the running average results
+    fig = plt.figure(0, figsize=(20, 8))
+    plt.rcParams.update({'font.size': 18})
 
-        hp = {'name': 'Neural_net', 'gamma': gamma, 'learning_rate': learning_rate}
-        label_str = hp['name'] + '(gamma:' + str(hp['gamma']) +  ',lr:' + str(
-            hp['learning_rate']) + ')'
-        file_str = label_str + datetime.now().strftime("_%d_%m_%H:%M") + '.png'
-        plt.plot(range(len(running_rewards)), running_rewards, lw=2, color=np.random.rand(3, ), label=label_str)
-        plt.grid()
-        plt.xlabel('Episodes')
-        plt.ylabel('Running average of Rewards')
-        plt.legend()
-        plt.savefig(file_str)
-        plt.show()
-
+    hp = {'name': 'Neural_net', 'gamma': gamma, 'learning_rate': learning_rate}
+    label_str = hp['name'] + '(gamma:' + str(hp['gamma']) +  ',lr:' + str(
+        hp['learning_rate']) + ')'
+    file_str = label_str + datetime.now().strftime("_%d_%m_%H:%M") + '.png'
+    plt.plot(range(len(running_rewards)), running_rewards, lw=2, color=np.random.rand(3, ), label=label_str)
+    plt.grid()
+    plt.xlabel('Episodes')
+    plt.ylabel('Running average of Rewards')
+    plt.legend()
+    plt.savefig('logs/'+ file_str)
+    plt.show()
 
     return ep_rewards, running_rewards
 

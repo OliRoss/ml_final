@@ -27,9 +27,9 @@ num_episodes = args.num_episodes[0]
 log_interval = args.log_interval[0]
 file = args.file
 
-print("Params: {} {} {} {} {} {}".format(gamma,render,learning_rate, num_episodes, file))
+print("Params: {} {} {} {} {}".format(gamma,render,learning_rate, num_episodes, file))
 
-policy = NNPolicyAgent.NNPolicy(8,2)
+policy = NNPolicyAgent.NNPolicy()
 
 if file is not None:
     policy.load(file)
