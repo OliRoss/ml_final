@@ -1,15 +1,14 @@
 # Tasks
 
-* Agent trainieren und Policy (.npy) speichern
+LFA Agent trainieren und Policy (.npy) speichern.
+Parameter:
+* gamma = 0.9
+* poly_degree = 2
+* step_size = 0.02
+* num_episodes = 1000 (mit automatischer Speicherung bei 500)
 
-## Raoul
+Random seeds:
 
-* "Evaluate"-Methode für Agent (ohne Gauß-sampeln)
-* Comparison Methode für die Agents schreiben
-* Policy-Training mit 5000 Episoden, Gamma = 0.9, step_size = 0.03
-        for poly_degree = 2 explodes starting from episode 130 ...
+Raoul: 2611
+Oli: 12345678
 
-## Oli
-
-* Policy-Training mit 5000 Episoden, Gamma = 0.9, step_size = 0.015
-* Mit neuronalem Netz starten?
