@@ -25,7 +25,6 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     :param: step_size: step size of the gradient descent
     :param: render: wether or not to render the environment
     '''
-    print("render: {}".format(render))
     # To track the reward across consecutive episodes (smoothed)
     running_reward = -250
     best_running_reward = -250
@@ -81,7 +80,8 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         end = time.time()
 
         if i % log_interval == 0:
-            print("Finished episode {} in {:.2f} seconds\tSteps: {}\tLast reward {:.2f}\tAverage reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
+            print("Finished episode {} in {:.2f} seconds\tSteps: {}\tLast reward {:.2f}\t"
+                  "Average reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
                 i, end - start, t, ep_reward, running_reward, norm, weight_0, weight_1))
         # Stopping criteria
         if running_reward > best_running_reward:
@@ -92,7 +92,8 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
             break
         # Stopping criteria
         if norm > 100000000000:
-            print('Norm explodes. Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
+            print('Norm explodes. Running reward is now {} and the last episode ran '
+                  'for {} steps!'.format(running_reward, t))
             break
 
     policy.save()
