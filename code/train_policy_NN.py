@@ -168,16 +168,19 @@ def train(policy, step_size, render, num_episodes, gamma, log_interval, random_s
     :param random_seed: the random seed to be used during training
     :return:
     '''
-    # set the random seed
-    set_random_seed(random_seed)
+    try:
+        # set the random seed
+        set_random_seed(random_seed)
 
-    # set the file  name of the model
-    file_str = 'models/NN' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(
-        num_episodes) + '_' + str(gamma) + '_' + str(policy.random_seed)
-    policy.file_name = file_str
+        # set the file  name of the model
+        file_str = 'models/NN' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(
+            num_episodes) + '_' + str(gamma) + '_' + str(policy.random_seed)
+        policy.file_name = file_str
 
-    # start the training
-    reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
+        # start the training
+        reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
+    except KeyboardInterrupt:
+        policy.save(policy.file_name + '_interrupt')
 
 
 def set_random_seed(random_seed):
