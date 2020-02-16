@@ -9,13 +9,7 @@ from datetime import datetime
 env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
-RANDOM_SEED = random.randint(100,100000000)
 SAVE_INTERVAL = 1
-
-# Set seeds for reproducability
-random.seed(RANDOM_SEED)
-env.seed(RANDOM_SEED)
-np.random.seed(RANDOM_SEED)
 
 def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_interval=1):
     '''
@@ -103,9 +97,9 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     fig = plt.figure(0, figsize=(20, 8))
     plt.rcParams.update({'font.size': 18})
 
-    hp = {'name': 'linearFA', 'gamma': gamma, 'poly_degree': policy.poly_degree, 'learning_rate': step_size}
+    hp = {'name': 'linearFA', 'gamma': gamma, 'poly_degree': policy.poly_degree, 'learning_rate': step_size, 'random_seed': policy.random_seed}
     label_str = hp['name'] + '(gamma:' + str(hp['gamma']) + ',poly:' + str(hp['poly_degree']) + ',lr:' + str(
-        hp['learning_rate']) + ')'
+        hp['learning_rate']) + ', random seed: ' + str(hp['random_seed']) + ')'
     file_str = label_str + datetime.now().strftime("_%d_%m_%H:%M") + '.png'
     plt.plot(range(len(running_rewards)), running_rewards, lw=2, color=np.random.rand(3, ), label=label_str)
     plt.grid()
@@ -160,7 +154,37 @@ def perform_update(policy, step_size, gamma=0.9):
     del policy.saved_log_probs[:]
     del policy.rewards[:]
 
+
 def train(policy, step_size, render,num_episodes, gamma, log_interval):
-    file_str = 'models/' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(num_episodes) + '_' + str(gamma) + '_' + str(policy.poly_degree)
+    '''
+    Does the necessary settings and starts the actual training afterwards.
+
+    :param policy: the LFAPolicy to be trained
+    :param step_size: the learning rate of the gradient descent steps
+    :param render: render the environment or not
+    :param num_episodes: the number of maximal episodes to be trained
+    :param gamma: the discount factor of the REINFORCE Algo
+    :param log_interval: in what interval shall update infos be printed on comand line
+    :return:
+    '''
+    #set the random seed
+    set_random_seed(policy.random_seed)
+
+    # set the file  name of the model
+    file_str = 'models/' + datetime.now().strftime("2020_%d_%m_%H:%M") + 'params_' + str(step_size) + '_' + str(num_episodes) + '_' + str(gamma) + '_' + str(policy.poly_degree) + '_' + str(policy.random_seed)
     policy.file_name = file_str
+
+    # start the training
     reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
+
+
+def set_random_seed(random_seed):
+    '''
+    Sets the random seed defined in the LFAPolicy
+
+    :param policy: the policy
+    :return:
+    '''
+    random.seed(random_seed)
+    env.seed(random_seed)
+    np.random.seed(random_seed)

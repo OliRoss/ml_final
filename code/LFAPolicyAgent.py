@@ -1,13 +1,14 @@
 import numpy as np
 import gym
+import random
 
-#STDDEV = np.exp(-.5)
-STDDEV = 0.3
+STDDEV = np.exp(-.5)
+#STDDEV = 0.3
 LEARNING_RATE = 5e-2
 
 
 class LFAPolicy:
-    def __init__(self, poly_degree):
+    def __init__(self, poly_degree, random_seed):
 
         # Degree of the polynomial feature
         self.poly_degree = poly_degree
@@ -23,6 +24,12 @@ class LFAPolicy:
 
         # file name of the weight matrix
         self.file_name = ''
+
+        # initialize the random seed to be used during training
+        if random_seed is not None:
+            self.random_seed = random_seed
+        else:
+            self.random_seed = 123
 
 
     def poly_features(self, state):
@@ -71,14 +78,14 @@ class LFAPolicy:
         output_units = feature_vector.T @ self.weights
 
         # Select Action 0, by sampling from a gaussian
-        mean_0 = output_units[0]
-        h_0 = np.random.normal(loc=mean_0, scale=STDDEV)
-        action_0 = np.tanh(h_0)
+        h_0 = output_units[0]
+        mean_0 = np.tanh(h_0)
+        action_0 = np.random.normal(loc=mean_0, scale=STDDEV)
 
         # Select Action 1, by sampling from a gaussian
-        mean_1 = output_units[1]
-        h_1 = np.random.normal(loc=mean_1, scale=STDDEV)
-        action_1 = np.tanh(h_1)
+        h_1 = output_units[1]
+        mean_1 = np.tanh(h_1)
+        action_1 = np.random.normal(loc=mean_1, scale=STDDEV)
 
         # Compute log prob for given state and actions
         factor = (np.array([action_0,action_1]) - output_units)/(STDDEV**2)
@@ -129,7 +136,7 @@ class LFAPolicy:
             while True:
                 action = self.select_action_deterministic(observation)
                 observation, reward, done, info = env.step(action)
-                # env.render()
+                env.render()
                 episode_reward += reward
                 if done:
                     rewards.append(episode_reward)

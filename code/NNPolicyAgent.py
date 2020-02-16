@@ -7,8 +7,14 @@ import torch.nn.functional as F
 import torch.distributions as torch_dist
 
 class NNPolicy(nn.Module):
-    def __init__(self):
+    def __init__(self, random_seed):
         super(NNPolicy, self).__init__()
+
+        # initialize the random seed to be used during training
+        if random_seed is not None:
+            self.random_seed = random_seed
+        else:
+            self.random_seed = 123
 
         self.affine1 = nn.Linear(8, 100)
         self.affine2 = nn.Linear(100, 100)
@@ -30,6 +36,7 @@ class NNPolicy(nn.Module):
         x = F.relu(self.affine1(x))
         x = F.relu(self.affine2(x))
         x = self.activation(self.affine3(x))
+
         return x
 
     def gaussian_policy(self, x):
