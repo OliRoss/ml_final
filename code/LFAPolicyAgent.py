@@ -151,8 +151,8 @@ class LFAPolicy:
         :param state_file: file name
         '''
         # Save the weight matrix to file 
-        np.save(self.file_name, self.weights)
-        print('Policy saved at ' + file_name)
+        np.save(file_name + '.npy', self.weights)
+        print('Policy saved at ' + file_name + '.npy')
 
     def load(self, state_file='models/LFAPolicy.npy'):
         '''
