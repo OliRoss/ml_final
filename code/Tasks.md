@@ -9,10 +9,10 @@ Parameter:
 
 Random seeds:
 
-Raoul: 2611
-Oli: 12345678
+Raoul: 2611 + weitere
+Oli: 12345678, 87654321
 
-Best practice:
+# Best practice:
 LFA: 
 * random weights 
 * first tanh
