@@ -41,21 +41,21 @@ class LFAPolicy:
 
         phi = np.zeros((self.poly_degree + 1) ** 8)
 
-        c = np.arange(0, self.poly_degree + 1)
-        i = 0
+        # c = np.arange(0, self.poly_degree + 1)
+        # i = 0
 
-        for p0 in c:
-            for p1 in c:
-                for p2 in c:
-                    for p3 in c:
-                        for p4 in c:
-                            for p5 in c:
-                                for p6 in c:
-                                    for p7 in c:
-                                        phi[i] = (state[0] ** p0) * (state[1] ** p1) * (state[2] ** p2) * (
-                                                state[3] ** p3) * (state[4] ** p4) * (state[5] ** p5) * (
-                                                         state[6] ** p6) * (state[7] ** p7)
-                                        i += 1
+        # for p0 in c:
+        #     for p1 in c:
+        #         for p2 in c:
+        #             for p3 in c:
+        #                 for p4 in c:
+        #                     for p5 in c:
+        #                         for p6 in c:
+        #                             for p7 in c:
+        #                                 phi[i] = (state[0] ** p0) * (state[1] ** p1) * (state[2] ** p2) * (
+        #                                         state[3] ** p3) * (state[4] ** p4) * (state[5] ** p5) * (
+        #                                                  state[6] ** p6) * (state[7] ** p7)
+        #                                 i += 1
 
         return phi
 
@@ -75,23 +75,19 @@ class LFAPolicy:
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
 
+        mean = np.tanh(output_units)
+
         # Select Action 0, by sampling from a gaussian
-        h_0 = output_units[0]
-        mean_0 = np.tanh(h_0)
-        action_0 = np.random.normal(loc=mean_0, scale=STDDEV)
-
-        # Select Action 1, by sampling from a gaussian
-        h_1 = output_units[1]
-        mean_1 = np.tanh(h_1)
-        action_1 = np.random.normal(loc=mean_1, scale=STDDEV)
-
-        action = np.clip([action_0, action_1], -1, 1)
+        action = np.random.normal(loc=mean, scale=STDDEV)
+        action = np.clip(action, -1, 1)
 
         # Compute log prob for given state and actions
         factor = (action - output_units)/(STDDEV**2)
+
+        #TODO: optimise
         self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector]).T)
 
-        return action_0, action_1
+        return action
 
     def select_action_deterministic(self,state):
         '''
