@@ -116,8 +116,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     plt.ylabel('Running average of Rewards')
     plt.legend()
     plt.savefig('logs/' + file_str)
-    plt.show()
-        
+
 
 def perform_update(policy, step_size, gamma=0.9):
     '''

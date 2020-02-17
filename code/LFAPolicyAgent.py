@@ -106,6 +106,7 @@ class LFAPolicy:
 
         return action
 
+    #TODO: Update according to the new poly_features function
     def select_action_deterministic(self,state):
         '''
         Selects an action from the given observed state, by using
@@ -126,6 +127,7 @@ class LFAPolicy:
         # Return the computed actions
         return output_units[0], output_units[1]
 
+    #TODO: update after updating select_action_deterministic
     def evaluate(self,num_episodes):
         '''
         Function for evaluating the Policy using deterministic action selection used
