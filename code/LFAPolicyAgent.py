@@ -25,7 +25,6 @@ class LFAPolicy:
 
         self.saved_log_probs = []
         self.rewards = []
-        self.feature_vector = [0] * ((poly_degree + 1) ** 8)
 
         # Store an instance of the c vector from Sutton and Burato p. 211.
         self.c_vector = LFAPolicy.calc_c(poly_degree)
@@ -62,11 +61,16 @@ class LFAPolicy:
         :param: state: Input state vector of size k (1D list)
         '''
 
+        feature_vector = [1] * ((self.poly_degree + 1) ** 8)
+
         # calculate the feature vector phi
-        for i in range(len(self.feature_vector)):
-            self.feature_vector[i] = 1
-            for j in range(8):
-                self.feature_vector[i] *= state[j] ** self.c_vector[i][j]
+        for i in range(len(feature_vector)):
+            feature_vector[i] = state[0] ** self.c_vector[i][0] * state[1] ** self.c_vector[i][1] * \
+                                state[2] ** self.c_vector[i][2] * state[3] ** self.c_vector[i][3] * \
+                                state[4] ** self.c_vector[i][4] * state[5] ** self.c_vector[i][5] * \
+                                state[6] ** self.c_vector[i][6] * state[7] ** self.c_vector[i][7]
+
+        return feature_vector
 
     def select_action(self, state):
         ''' 
@@ -82,8 +86,7 @@ class LFAPolicy:
         state = state.tolist()
 
         # Compute feature vector
-        self.poly_features(state)
-        feature_vector = np.array(self.feature_vector)
+        feature_vector = np.array(self.poly_features(state))
 
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
