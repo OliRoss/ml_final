@@ -28,6 +28,8 @@ class LFAPolicy:
 
         #store an instance of the c vector from Sutton and Burato p. 211
         self.c_vector = LFAPolicy.calc_c(poly_degree)
+        self.feature_vector = np.zeros((poly_degree + 1) ** 8)
+        print("feature vector shape: {}".format(self.feature_vector.shape))
 
         # file name of the weight matrix
         self.file_name = ''
@@ -62,18 +64,15 @@ class LFAPolicy:
         :return: feature vector phi consisting of (n+1)^k elements (1D numpy array)
         '''
 
-        phi = np.zeros((poly_degree + 1) ** 8)
 
         # calculate the feature vector phi
-        for i in range(len(phi)):
-            phi[i] = 1
+        for i in range(len(self.feature_vector)):
+            self.feature_vector[i] = 1
             for j in range(8):
-                phi[i] *= (state[j] ** self.c_vector[i][j])
-
-        return phi
+                self.feature_vector *= (state[j] ** self.c_vector[i][j])
 
     def select_action(self, state):
-        ''' 
+        '''
         Selects an action from the given observed state, by using
         the policy. It samples from a gaussian that is output by the
         linear function approximater.
@@ -83,10 +82,10 @@ class LFAPolicy:
         '''
 
         # Compute feature vector
-        feature_vector = self.poly_features(state, self.poly_degree)
+        self.poly_features(state, self.poly_degree)
 
         # Multiply feature vector with weight vector
-        output_units = feature_vector.T @ self.weights
+        output_units = self.feature_vector.T @ self.weights
 
         mean = np.tanh(output_units)
 
@@ -97,8 +96,8 @@ class LFAPolicy:
         # Compute log prob for given state and actions
         factor = (action - output_units)/(STDDEV**2)
 
-        #TODO: optimise
-        self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector]).T)
+        log_prob = np.array([factor[0] * self.feature_vector, factor[1] * self.feature_vector]).T
+        self.saved_log_probs.append(log_prob)
 
         return action
 
