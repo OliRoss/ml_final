@@ -38,4 +38,5 @@ NN:
 
 # Debugging 
 
-* Accessing numpy-arrays via index makes computation of polynomial features slower by a factor 2
+* Accessing numpy-arrays via index makes computation of polynomial features slower by a factor 4
+* Reducing the amount of single-element operations with np-objects as much as possible increased a speed up of factor 10 
