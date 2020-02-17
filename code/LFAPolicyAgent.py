@@ -26,11 +26,34 @@ class LFAPolicy:
         self.saved_log_probs = []
         self.rewards = []
 
+        #store an instance of the c vector from Sutton and Burato p. 211
+        self.c_vector = LFAPolicy.calc_c(poly_degree)
+
         # file name of the weight matrix
         self.file_name = ''
 
+    @staticmethod
+    def calc_c(poly_degree):
+        '''
+        Computes the c vector from Sutton and Burato p. 211
 
-    def poly_features(self, state):
+        :param poly_degree: polynomial degree
+        :return: vector with the components for the polynomial feature function
+        '''
+        c = np.zeros(((poly_degree + 1) ** 8, 8))
+        num = 0
+        for pos in range(8):
+            for row in range((poly_degree + 1) ** 8):
+                c[row][pos] = num
+                if (row + 1) % ((poly_degree + 1) ** pos) == 0:
+                    if num < poly_degree:
+                        num += 1
+                    else:
+                        num = 0
+
+        return c
+
+    def poly_features(self, state, poly_degree):
         '''
         Computes the polynomial feature vector from the input states
 
@@ -39,23 +62,13 @@ class LFAPolicy:
         :return: feature vector phi consisting of (n+1)^k elements (1D numpy array)
         '''
 
-        phi = np.zeros((self.poly_degree + 1) ** 8)
+        phi = np.zeros((poly_degree + 1) ** 8)
 
-        # c = np.arange(0, self.poly_degree + 1)
-        # i = 0
-
-        # for p0 in c:
-        #     for p1 in c:
-        #         for p2 in c:
-        #             for p3 in c:
-        #                 for p4 in c:
-        #                     for p5 in c:
-        #                         for p6 in c:
-        #                             for p7 in c:
-        #                                 phi[i] = (state[0] ** p0) * (state[1] ** p1) * (state[2] ** p2) * (
-        #                                         state[3] ** p3) * (state[4] ** p4) * (state[5] ** p5) * (
-        #                                                  state[6] ** p6) * (state[7] ** p7)
-        #                                 i += 1
+        # calculate the feature vector phi
+        for i in range(len(phi)):
+            phi[i] = 1
+            for j in range(8):
+                phi[i] *= (state[j] ** self.c_vector[i][j])
 
         return phi
 
@@ -70,7 +83,7 @@ class LFAPolicy:
         '''
 
         # Compute feature vector
-        feature_vector = self.poly_features(state)
+        feature_vector = self.poly_features(state, self.poly_degree)
 
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
@@ -117,7 +130,6 @@ class LFAPolicy:
         :param num_episodes: the number of episode to be evaluated
         :return: list of rewards per episode
         '''
-
 
         env = gym.make('LunarLanderContinuous-v2')
         rewards = []
