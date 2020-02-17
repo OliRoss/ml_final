@@ -119,7 +119,11 @@ class NNPolicy(nn.Module):
             observation = env.reset()
             episode_reward = 0
             while True:
-                _,action,_ = self.gaussian_policy(observation)
+                # Unsqueeze Pytorch tensor
+                state = torch.from_numpy(observation).float().unsqueeze(0)
+
+                output = self.forward(state)
+                action = output[:, 0:2]
                 observation, reward, done, info = env.step(np.array([action[0][0], action[0][1]]))
                 # env.render()
                 episode_reward += reward
