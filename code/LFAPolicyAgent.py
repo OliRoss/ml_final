@@ -65,6 +65,7 @@ class LFAPolicy:
 
         # calculate the feature vector phi
         for i in range(len(feature_vector)):
+            # beacause of performance we do not use a for-loop
             feature_vector[i] = state[0] ** self.c_vector[i][0] * state[1] ** self.c_vector[i][1] * \
                                 state[2] ** self.c_vector[i][2] * state[3] ** self.c_vector[i][3] * \
                                 state[4] ** self.c_vector[i][4] * state[5] ** self.c_vector[i][5] * \
