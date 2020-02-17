@@ -35,3 +35,7 @@ NN:
 * profile memory and objects
 * more computers
 * unnecessary imports, all in one linear file
+
+# Debugging 
+
+* Accessing numpy-arrays via index makes computation of polynomial features slower by a factor 2
