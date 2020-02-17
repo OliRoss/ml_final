@@ -88,23 +88,19 @@ class LFAPolicy:
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
 
+        mean = np.tanh(output_units)
+
         # Select Action 0, by sampling from a gaussian
-        h_0 = output_units[0]
-        mean_0 = np.tanh(h_0)
-        action_0 = np.random.normal(loc=mean_0, scale=STDDEV)
-
-        # Select Action 1, by sampling from a gaussian
-        h_1 = output_units[1]
-        mean_1 = np.tanh(h_1)
-        action_1 = np.random.normal(loc=mean_1, scale=STDDEV)
-
-        action = np.clip([action_0, action_1], -1, 1)
+        action = np.random.normal(loc=mean, scale=STDDEV)
+        action = np.clip(action, -1, 1)
 
         # Compute log prob for given state and actions
         factor = (action - output_units)/(STDDEV**2)
-        self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector]).T)
 
-        return action_0, action_1
+        log_prob = np.array([factor[0] * feature_vector, factor[1] * feature_vector]).T
+        self.saved_log_probs.append(log_prob)
+
+        return action
 
     def select_action_deterministic(self,state):
         '''

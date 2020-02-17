@@ -39,10 +39,10 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         for t in range (1, 10000):
 
             # Select action according to policy:
-            action_0, action_1 = policy.select_action(state)
+            action = policy.select_action(state)
 
             # Perform action and observe state + reward
-            state, reward, done, _ = env.step(np.array([action_0,action_1]))
+            state, reward, done, _ = env.step(action)
 
             if render == "True":
                 env.render()
