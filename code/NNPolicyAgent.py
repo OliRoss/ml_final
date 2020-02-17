@@ -12,9 +12,9 @@ class NNPolicy(nn.Module):
 
         self.random_seed = random_seed
         self.affine1 = nn.Linear(8, 512)
-        self.dropout1 = nn.Dropout(p=.8)
+        self.dropout1 = nn.Dropout(p=.6)
         self.affine2 = nn.Linear(512, 128)
-        self.dropout2 = nn.Dropout(p=.8)
+        self.dropout2 = nn.Dropout(p=.6)
         self.affine3 = nn.Linear(128, 4)
 
         self.activation = nn.Tanh()

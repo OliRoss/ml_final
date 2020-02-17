@@ -8,7 +8,11 @@ LEARNING_RATE = 5e-2
 
 
 class LFAPolicy:
-    def __init__(self, poly_degree, random_seed):
+    def __init__(self, poly_degree, random_seed=123):
+
+        # initialize the random seed to be used during training
+        self.random_seed = random_seed
+        np.random.seed(self.random_seed)
 
         # Degree of the polynomial feature
         self.poly_degree = poly_degree
@@ -24,12 +28,6 @@ class LFAPolicy:
 
         # file name of the weight matrix
         self.file_name = ''
-
-        # initialize the random seed to be used during training
-        if random_seed is not None:
-            self.random_seed = random_seed
-        else:
-            self.random_seed = 123
 
 
     def poly_features(self, state):
@@ -87,8 +85,10 @@ class LFAPolicy:
         mean_1 = np.tanh(h_1)
         action_1 = np.random.normal(loc=mean_1, scale=STDDEV)
 
+        action = np.clip([action_0, action_1], -1, 1)
+
         # Compute log prob for given state and actions
-        factor = (np.array([action_0,action_1]) - output_units)/(STDDEV**2)
+        factor = (action - output_units)/(STDDEV**2)
         self.saved_log_probs.append(np.array([factor[0]*feature_vector,factor[1]*feature_vector]).T)
 
         return action_0, action_1
