@@ -40,7 +40,7 @@ class NNPolicy(nn.Module):
 
         '''
         Implements a policy that samples actions from a gaussian distribution. The mean
-        of the gaussian is computed by the neural network.
+        and standard deviation of the gaussian is computed by the neural network.
 
         :param state: Input to the neural network (8-dimensional state vector)
         :return: Mean of the computed gaussian, sampled actions and log_prob of the sample actions
@@ -48,7 +48,7 @@ class NNPolicy(nn.Module):
         # Unsqueeze Pytorch tensor
         state = torch.from_numpy(state).float().unsqueeze(0)
 
-        # get the gaussian mean from the neural network
+        # get the gaussian mean and standard deviation from the neural network
         output = self.forward(state)
         mu = output[:,0:2]
         std = output [:,2:4]
