@@ -1,6 +1,6 @@
 import numpy as np
 import gym
-import random
+import time
 
 STDDEV = np.exp(-.5)
 #STDDEV = 0.3
@@ -25,8 +25,9 @@ class LFAPolicy:
 
         self.saved_log_probs = []
         self.rewards = []
+        self.feature_vector = [0] * ((poly_degree + 1) ** 8)
 
-        #store an instance of the c vector from Sutton and Burato p. 211
+        # Store an instance of the c vector from Sutton and Burato p. 211.
         self.c_vector = LFAPolicy.calc_c(poly_degree)
 
         # file name of the weight matrix
@@ -40,7 +41,8 @@ class LFAPolicy:
         :param poly_degree: polynomial degree
         :return: vector with the components for the polynomial feature function
         '''
-        c = np.zeros(((poly_degree + 1) ** 8, 8))
+        c = [[0] * 8] * ((poly_degree + 1) ** 8)
+
         num = 0
         for pos in range(8):
             for row in range((poly_degree + 1) ** 8):
@@ -49,28 +51,22 @@ class LFAPolicy:
                     if num < poly_degree:
                         num += 1
                     else:
-                        num = 0
+                       num = 0
 
         return c
 
-    def poly_features(self, state, poly_degree):
+    def poly_features(self, state):
         '''
         Computes the polynomial feature vector from the input states
 
-        :param: state: Input state vector of size k (1D numpy array)
-        :param: n: polynomial degree
-        :return: feature vector phi consisting of (n+1)^k elements (1D numpy array)
+        :param: state: Input state vector of size k (1D list)
         '''
 
-        phi = np.zeros((poly_degree + 1) ** 8)
-
         # calculate the feature vector phi
-        for i in range(len(phi)):
-            phi[i] = 1
+        for i in range(len(self.feature_vector)):
+            self.feature_vector[i] = 1
             for j in range(8):
-                phi[i] *= (state[j] ** self.c_vector[i][j])
-
-        return phi
+                self.feature_vector[i] *= state[j] ** self.c_vector[i][j]
 
     def select_action(self, state):
         ''' 
@@ -82,8 +78,12 @@ class LFAPolicy:
         :return: Continuous action vector of size 2 (1D numpy array)
         '''
 
+        # cast state to list for performance reason
+        state = state.tolist()
+
         # Compute feature vector
-        feature_vector = self.poly_features(state, self.poly_degree)
+        self.poly_features(state)
+        feature_vector = np.array(self.feature_vector)
 
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
