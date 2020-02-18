@@ -25,8 +25,12 @@ class random_policy():
 
     def evaluate(self,num_episodes):
         rewards = []
+        i = 0
 
         for episode in range(num_episodes):
+            if i % 10 == 0:
+                print("Evaluating episode # {}".format(i))
+            i = i + 1
             observation = self.env.reset()
             episode_reward = 0
             while True:
