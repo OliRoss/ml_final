@@ -1,15 +1,14 @@
 import numpy as np
 import LFAPolicyAgent
 import NNPolicyAgent
-import random_agent
+import RandomAgent
 import gym
-import matplotlib.pyplot as plt
 from _datetime import datetime
 import argparse
 import os
 
 
-parser = argparse.ArgumentParser('python3 eval_policy.py')
+parser = argparse.ArgumentParser('python3 EvalPolicy.py')
 parser.add_argument('num_episodes', metavar='num_episodes', type=int, nargs=1,
                     help='amount of episodes that the agent will be evaluated for', action='store')
 parser.add_argument('-f', action='store', type=str, dest='file', help='optional filename for saved models.'
@@ -47,9 +46,9 @@ if args.file is not None:
         file_str = 'logs/' + 'lfa_agent_degree_' + "{}".format(poly_degree) + \
                    datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
     else:
-        raise Exception('Please provide valid input. See eval_policy.py -h for help.')
+        raise Exception('Please provide valid input. See EvalPolicy.py -h for help.')
 else:
-    policy = random_agent.random_policy()
+    policy = RandomAgent.random_policy()
     file_str = 'logs/' + 'random_agent' + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
 
 if out_file is not None:

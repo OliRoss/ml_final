@@ -4,7 +4,7 @@ import os
 
 import argparse
 
-parser = argparse.ArgumentParser('python3 plot_csv_files.py')
+parser = argparse.ArgumentParser('python3 PlotCSVFile.py')
 parser.add_argument('file_1', metavar='csv_file_1', type=str, nargs=1,
                      help='first file in csv format', action='store')
 parser.add_argument('file_2', metavar='csv_file_2', type=str, nargs=1,

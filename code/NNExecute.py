@@ -1,5 +1,5 @@
 import NNPolicyAgent
-import train_policy_NN
+import NNTrainPolicy
 import argparse
 
 parser = argparse.ArgumentParser('REINFORCE algo to learn lunar lander')
@@ -31,4 +31,4 @@ print("Params: {} {} {} {} {}".format(gamma,render,learning_rate, num_episodes, 
 
 policy = NNPolicyAgent.NNPolicy(random_seed)
 
-train_policy_NN.train(policy, learning_rate, render, num_episodes, gamma, log_interval, random_seed)
+NNTrainPolicy.train(policy, learning_rate, render, num_episodes, gamma, log_interval, random_seed)
