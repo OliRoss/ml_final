@@ -1,3 +1,10 @@
+*.fdb_latexmk
+*.fls
+*.out
+*.pdf
+*.gz
+*.aus
+
 .idea/*
 code/models/*
 code/logs/*
