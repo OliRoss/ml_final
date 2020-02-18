@@ -68,9 +68,11 @@ def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, 
         if running_reward > best_running_reward:
             policy.save(policy.file_name + '_best')
             best_running_reward = running_reward
+            np.savetxt(policy.file_name + '_best_ep_rewards.csv', ep_rewards, delimiter=",")
         # save after every 50 episodes
         if i_episode % SAVE_INTERVAL == 0:
             policy.save(policy.file_name + '_regular')
+            np.savetxt(policy.file_name + '_regular_ep_rewards.csv', ep_rewards, delimiter=",")
         # Stopping criteria
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
@@ -78,6 +80,7 @@ def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, 
 
     # save last policy
     policy.save(policy.file_name + '_regular')
+    np.savetxt(policy.file_name + '_regular_ep_rewards.csv', ep_rewards, delimiter=",")
 
     # Plot the running average results
     fig = plt.figure(0, figsize=(20, 8))
