@@ -9,7 +9,8 @@ parser.add_argument('file_1', metavar='file_1', type=str, nargs=1,
                      help='First file in csv format', action='store')
 parser.add_argument('file_2', metavar='file_2', type=str, nargs=1,
                      help='Second file in csv format', action='store')
-parser.add_argument('-o', action='store', dest='out_file', help='Optional output file name')
+parser.add_argument('-o', action='store', dest='out_file', help='Optional output file name. If none is given, the'
+                                                                'plot is only shown and not saved.')
 parser.add_argument('-l1', action='store', dest='label_1', help='Optional Label for first dataset')
 parser.add_argument('-l2', action='store', dest='label_2', help='Optional Label for second dataset')
 
