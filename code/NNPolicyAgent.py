@@ -17,11 +17,11 @@ class NNPolicy(nn.Module):
         
         '''
         self.random_seed = random_seed
-        self.affine1 = nn.Linear(8, 100)
+        self.affine1 = nn.Linear(8, 64)
         self.dropout1 = nn.Dropout(p=.6)
-        self.affine2 = nn.Linear(100, 1000)
+        self.affine2 = nn.Linear(64, 64)
         self.dropout2 = nn.Dropout(p=.6)
-        self.affine3 = nn.Linear(1000, 16)
+        self.affine3 = nn.Linear(64, 16)
         self.dropout3 = nn.Dropout(p=.6)
         self.affine4 = nn.Linear(16, 4)
 
