@@ -154,7 +154,7 @@ def perform_update(policy, step_size, gamma=0.9):
 
     # Multiply returns by Gamma to the power of T
     num_steps = len(returns)
-    returns = [x * gamma**(num_steps) for x in returns]
+    returns = [x * gamma ** num_steps for x in returns]
 
     # Update the weights of the policy
     for i in range(num_steps):
@@ -199,7 +199,7 @@ def set_random_seed(random_seed):
     '''
     Sets the random seed defined in the LFAPolicy
 
-    :param policy: the policy
+    :param random_seed: Random seed value
     :return:
     '''
     random.seed(random_seed)

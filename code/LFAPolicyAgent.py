@@ -185,7 +185,7 @@ class LFAPolicy:
         '''
         Function for saving the weight matrix to .npy-file
 
-        :param state_file: file name
+        :param file_name: File name for the weight matrix
         '''
         # Save the weight matrix to file 
         np.save(file_name + '.npy', self.weights)
