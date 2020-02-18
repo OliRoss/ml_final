@@ -40,8 +40,8 @@ plt.plot(range(len(rewards_1)), rewards_1, lw=2, color=np.random.rand(3, ), labe
 plt.plot(range(len(rewards_2)), rewards_2, lw=2, color=np.random.rand(3, ), label=label_2)
 
 plt.grid()
-plt.xlabel('Episode')
-plt.ylabel('Rewards')
+plt.xlabel('Episode #')
+plt.ylabel('Reward')
 plt.legend()
 if out_file is not None:
     plt.savefig(out_file)

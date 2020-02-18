@@ -11,11 +11,13 @@ class NNPolicy(nn.Module):
         super(NNPolicy, self).__init__()
 
         self.random_seed = random_seed
-        self.affine1 = nn.Linear(8, 512)
+        self.affine1 = nn.Linear(8, 100)
         self.dropout1 = nn.Dropout(p=.6)
-        self.affine2 = nn.Linear(512, 128)
+        self.affine2 = nn.Linear(100, 1000)
         self.dropout2 = nn.Dropout(p=.6)
-        self.affine3 = nn.Linear(128, 4)
+        self.affine3 = nn.Linear(1000, 16)
+        self.dropout3 = nn.Dropout(p=.6)
+        self.affine4 = nn.Linear(16, 4)
 
         self.activation = nn.Tanh()
 
@@ -32,7 +34,8 @@ class NNPolicy(nn.Module):
 
         x = F.relu(self.dropout1(self.affine1(x)))
         x = F.relu(self.dropout2(self.affine2(x)))
-        x = self.activation(self.affine3(x))
+        x = F.relu(self.dropout3(self.affine3(x)))
+        x = self.activation(self.affine4(x))
 
         return x
 
