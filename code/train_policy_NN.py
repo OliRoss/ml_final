@@ -23,7 +23,7 @@ env.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 
 
-def reinforce(policy, learning_rate=False,render=False, num_episodes=100, gamma=0.9, log_interval=1):
+def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, log_interval=1):
 
     policy.train()
 
