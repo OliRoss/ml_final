@@ -15,10 +15,13 @@ SAVE_INTERVAL = 50
 
 def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, log_interval=1):
 
+    # Set neural network to training mode
     policy.train()
 
-    # To track the reward across consecutive episodes (smoothed)
-    running_reward = -250.0
+    # To track the reward across consecutive episodes
+    running_reward = -250
+
+    # To track the best running reward encountered so far
     best_running_reward = -250
 
     # Lists to store the episodic and running rewards for plotting
@@ -40,6 +43,7 @@ def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, 
             # Perform the action and note the next state and reward
             state, reward, done, _ = env.step(np.array([action[0][0], action[0][1]]))
 
+            # Render, if necessary
             if render == True:
                 env.render()
 
@@ -62,30 +66,33 @@ def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, 
         # Perform the parameter update according to REINFORCE
         perform_update(policy,learning_rate,gamma)
 
+        # Log to stdout
         if i_episode % log_interval == 0:
             print('Finished episode {}\tEpisode reward: {:.2f}\tAverage reward: {:.2f}'.format(i_episode, ep_reward, running_reward))
-        # save if running reward improved over all running rewards
+
+        # Save if running reward improved over all running rewards
         if running_reward > best_running_reward:
             policy.save(policy.file_name + '_best')
             best_running_reward = running_reward
             np.savetxt(policy.file_name + '_best_ep_rewards.csv', ep_rewards, delimiter=",")
-        # save after every 50 episodes
+
+        # Save after every 50 episodes
         if i_episode % SAVE_INTERVAL == 0:
             policy.save(policy.file_name + '_regular')
             np.savetxt(policy.file_name + '_regular_ep_rewards.csv', ep_rewards, delimiter=",")
+
         # Stopping criteria
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break
 
-    # save last policy
+    # Save last policy, and the recorded rewards
     policy.save(policy.file_name + '_regular')
     np.savetxt(policy.file_name + '_regular_ep_rewards.csv', ep_rewards, delimiter=",")
 
     # Plot the running average results
     fig = plt.figure(0, figsize=(20, 8))
     plt.rcParams.update({'font.size': 18})
-
     hp = {'name': 'Neural_net', 'gamma': gamma, 'learning_rate': learning_rate, 'random_seed': policy.random_seed}
     label_str = hp['name'] + '(gamma:' + str(hp['gamma']) +  ',lr:' + str(
         hp['learning_rate']) + ',random seed: ' + str(hp['random_seed']) + ')'
@@ -102,10 +109,17 @@ def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, 
 
 
 def perform_update(policy, learning_rate, gamma = 0.9):
+    '''
+
+       :param policy: Policy object (neural network from pytorch) that will be trained
+       :param learning_rate: learning rate for the optimizer
+       :param gamma: Discount factor from the REINFORCE algorithm
+    '''
+
     # Define the optimizer and set the learning rate
     optimizer = optim.Adam(policy.parameters(), lr=learning_rate)
 
-    # Variable for the current return
+    # Variable for the current return, loss
     G = 0
     policy_loss = []
     returns = []
@@ -121,27 +135,24 @@ def perform_update(policy, learning_rate, gamma = 0.9):
     # Convert the list of returns into a torch tensor
     returns = torch.tensor(returns)
 
-    # Here we normalize the returns by subtracting the mean and dividing
-    # by the standard deviation. Normalization is a standard technique in
-    # deep learning and it improves performance, as discussed in
-    # http://karpathy.github.io/2016/05/31/rl/
+    # Normalizing the returns. Taken from a notebook from class
     returns = (returns - returns.mean()) / (returns.std() + eps)
 
-    # Product of the corresponding logprobs and returns
-    # This is used to compute the loss for backpropagation
+    # Product of the corresponding logprobs and returns.
+    # This is used to compute the loss for backpropagation.
     for log_prob, G in zip(policy.saved_log_probs, returns):
         policy_loss.append(-log_prob * G)
 
     # Reset the gradients of the parameters
     optimizer.zero_grad()
 
-    # Compute the cumulative loss
+    # Compute the loss
     policy_loss = torch.cat(policy_loss).mean()
 
-    # Backpropagate the loss through the network
+    # Backpropagate the loss
     policy_loss.backward()
 
-    # Perform a parameter update step
+    # Perform a parameter step in direction of the gradient
     optimizer.step()
 
     # Reset the saved rewards and log probabilities
@@ -173,6 +184,8 @@ def train(policy, step_size, render, num_episodes, gamma, log_interval, random_s
 
         # start the training
         reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
+
+    # Save the model in case of Keyboard Interrupt
     except KeyboardInterrupt:
         policy.save(policy.file_name + '_interrupt')
 

@@ -2,6 +2,7 @@ import NNPolicyAgent
 import NNTrainPolicy
 import argparse
 
+# Parse command line options
 parser = argparse.ArgumentParser('REINFORCE algo to learn lunar lander')
 parser.add_argument('gamma', metavar='gamma', type=float, nargs=1,
                     help='discount factor gamma', action='store')
@@ -27,8 +28,8 @@ num_episodes = args.num_episodes[0]
 log_interval = args.log_interval[0]
 random_seed = args.random_seed
 
-print("Params: {} {} {} {} {}".format(gamma,render,learning_rate, num_episodes, random_seed))
-
+# Create neural network policy agent
 policy = NNPolicyAgent.NNPolicy(random_seed)
 
+# Train the neural network policy agent
 NNTrainPolicy.train(policy, learning_rate, render, num_episodes, gamma, log_interval, random_seed)

@@ -2,6 +2,7 @@ import LFAPolicyAgent
 import LFATrainPolicy
 import argparse
 
+# Parse command line options
 parser = argparse.ArgumentParser('REINFORCE algo to learn lunar lander')
 parser.add_argument('gamma', metavar='gamma', type=float, nargs=1,
                     help='discount factor gamma', action='store')
@@ -28,12 +29,14 @@ log_interval = args.log_interval[0]
 file = args.file
 random_seed = args.random_seed
 
-
-print("Params: {} {} {} {} {} {} {}".format(gamma,poly_degree,render,step_size, num_episodes, file, random_seed))
-
+# Create LFAPolicyAgent object with the required polynomial degree and random seed
 policy = LFAPolicyAgent.LFAPolicy(poly_degree, random_seed)
+
+# Load the weights from the given file
 if file is not None:
     policy.load(file)
     if len(policy.weights) != (policy.poly_degree + 1)**8:
         raise ValueError('The given polynomial degree is not compatible with the loaded weight matrix')
+
+# Invoke the train method to train the LFA Policy Agent
 LFATrainPolicy.train(policy, step_size, render,num_episodes, gamma, log_interval)

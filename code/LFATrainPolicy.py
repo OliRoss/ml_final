@@ -20,8 +20,11 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     :param: step_size: step size of the gradient descent
     :param: render: wether or not to render the environment
     '''
-    # To track the reward across consecutive episodes (smoothed)
+
+    # To track the reward across consecutive episodes
     running_reward = -250
+
+    # To track the best running reward encountered so far
     best_running_reward = -250
 
     # Lists to store the episodic and running rewards for plotting
@@ -34,6 +37,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         # Reset reward and state:
         ep_reward, state = 0, env.reset()
 
+        # Time each episode for logging
         start = time.time()
 
         # For each step
@@ -45,6 +49,7 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
             # Perform action and observe state + reward
             state, reward, done, _ = env.step(action)
 
+            # render, if needed
             if render == "True":
                 env.render()
 
@@ -68,30 +73,36 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
         # Perform the gradient update for the current episode
         perform_update(policy,step_size,gamma)
 
+        # Compute the norm of the weight matrix, to prevent overflow
         norm = np.linalg.norm(policy.weights)
         weight_0 = policy.weights[50,0]
         weight_1 = policy.weights[50,1]
 
         end = time.time()
 
+        # Logging
         if i % log_interval == 0:
             print("Finished episode {} in {:.2f} seconds\tSteps: {}\tLast reward {:.2f}\t"
                   "Average reward: {:.2f}\t\tNorm: {:.5f}\tWeights: {:.5f} {:.5f}".format(
                 i, end - start, t, ep_reward, running_reward, norm, weight_0, weight_1))
-        # save if running reward improved over all running rewards
+
+        # Save if running reward improved over all running rewards
         if running_reward > best_running_reward:
             policy.save(policy.file_name + '_best')
             np.savetxt(policy.file_name + '_best_ep_rewards.csv', ep_rewards, delimiter=",")
             best_running_reward = running_reward
-        # save for all 50 episodes
+
+        # Save in regular intervals
         if i % SAVE_INTERVAL == 0:
             policy.save(policy.file_name + '_regular')
             np.savetxt(policy.file_name + '_regular_ep_rewards.csv', ep_rewards, delimiter=",")
-        # Stopping criteria
+
+        # Stopping criteria, specified threshold is reached
         if running_reward > env.spec.reward_threshold:
             print('Running reward is now {} and the last episode ran for {} steps!'.format(running_reward, t))
             break
-        # Stopping criteria
+
+        # Stopping criteria, norm of the weight matrix is unrealistically high
         if norm > 100000000000:
             print('Norm explodes. Running reward is now {} and the last episode ran '
                   'for {} steps!'.format(running_reward, t))
@@ -104,7 +115,6 @@ def reinforce(policy, step_size, render=False, num_episodes=100, gamma=0.9,log_i
     # Plot the running average results
     fig = plt.figure(0, figsize=(20, 8))
     plt.rcParams.update({'font.size': 18})
-
     hp = {'name': 'linearFA', 'gamma': gamma, 'poly_degree': policy.poly_degree, 'learning_rate': step_size, 'random_seed': policy.random_seed}
     label_str = hp['name'] + '(gamma:' + str(hp['gamma']) + ',poly:' + str(hp['poly_degree']) + ',lr:' + str(
         hp['learning_rate']) + ', random seed: ' + str(hp['random_seed']) + ')'
@@ -134,8 +144,6 @@ def perform_update(policy, step_size, gamma=0.9):
         G = r + gamma * G
         returns.insert(0, G)
 
-    average_reward = np.mean(policy.rewards)
-
     # Define a small float which is used to avoid divison by zero
     eps = np.finfo(np.float32).eps.item()
     # Normalize returns by subtracting the mean and dividing by the standard deviation
@@ -154,9 +162,6 @@ def perform_update(policy, step_size, gamma=0.9):
         # Gradient step without baseline
         policy.weights = policy.weights + step_size * returns[i] * policy.saved_log_probs[i]
 
-        # Gradient step with baseline
-        # policy.weights = policy.weights + step_size * (returns[i]-average_reward) * policy.saved_log_probs[i]
-
     # delete the probabilities and rewards
     del policy.saved_log_probs[:]
     del policy.rewards[:]
@@ -170,8 +175,8 @@ def train(policy, step_size, render,num_episodes, gamma, log_interval):
     :param step_size: the learning rate of the gradient descent steps
     :param render: render the environment or not
     :param num_episodes: the number of maximal episodes to be trained
-    :param gamma: the discount factor of the REINFORCE Algo
-    :param log_interval: in what interval shall update infos be printed on comand line
+    :param gamma: the discount factor of the REINFORCE algorithm
+    :param log_interval: episodes between printing to command line
     :return:
     '''
     try:
@@ -184,6 +189,8 @@ def train(policy, step_size, render,num_episodes, gamma, log_interval):
 
         # start the training
         reinforce(policy, step_size, render, num_episodes, gamma, log_interval)
+
+    # Save the model in case of Keyboard Interrupt
     except KeyboardInterrupt:
         policy.save(policy.file_name + '_interrupt')
 

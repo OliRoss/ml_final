@@ -25,22 +25,40 @@ class random_policy():
         return self.env.action_space.sample()
 
     def evaluate(self,num_episodes):
+        '''
+        Function that evaluates the random agent's performance
+        :param num_episodes: How many episodes the agent will be tested for
+        :return: list that contains the rewards achieved per episode
+        '''
+
         rewards = []
         i = 0
 
+        # Iterate through episodes
         for episode in range(num_episodes):
+
+            # Track progress on stdout every 10 episodes
             if i % 10 == 0:
                 print("Evaluating episode # {}".format(i))
             i = i + 1
+
+            # Get inital state from environment
             observation = self.env.reset()
             episode_reward = 0
+
+            # Iterate through the steps of the episode
             while True:
+                # Get action
                 action = self.get_action(observation)
+
+                # Perform step and observe
                 observation, reward, done, info = self.env.step(action)
-                # You can comment the below line for faster execution
-                # env.render()
+
+                # Calculate episode reward
                 episode_reward += reward
+
                 if done:
                     rewards.append(episode_reward)
                     break
+
         return rewards

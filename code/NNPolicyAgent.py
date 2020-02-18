@@ -11,6 +11,11 @@ class NNPolicy(nn.Module):
     def __init__(self, random_seed=123):
         super(NNPolicy, self).__init__()
 
+        #TODO: complete
+        '''
+        Neural network with the following architecture:
+        
+        '''
         self.random_seed = random_seed
         self.affine1 = nn.Linear(8, 100)
         self.dropout1 = nn.Dropout(p=.6)
@@ -20,6 +25,7 @@ class NNPolicy(nn.Module):
         self.dropout3 = nn.Dropout(p=.6)
         self.affine4 = nn.Linear(16, 4)
 
+        # Final activation is tanh to squeeze values into range [-1,1]
         self.activation = nn.Tanh()
 
         self.saved_log_probs = []
@@ -49,16 +55,16 @@ class NNPolicy(nn.Module):
         :param state: Input to the neural network (8-dimensional state vector)
         :return: Mean of the computed gaussian, sampled actions and log_prob of the sample actions
         '''
+
         # Unsqueeze Pytorch tensor
         state = torch.from_numpy(state).float().unsqueeze(0)
 
-        # get the gaussian mean and standard deviation from the neural network
+        # Get the gaussian mean and standard deviation from the neural network
         output = self.forward(state)
         mu = output[:,0:2]
         std = output [:,2:4]
 
-        # print("output: {}\n mu: {}\n std: {}".format(output,mu,std))
-        # Set up gaussian, with given mean and standard deviation
+        # Set up gaussian, with computed mean and standard deviation
         dist = torch_dist.Normal(mu, std)
 
         # Sample from gaussian
@@ -96,9 +102,11 @@ class NNPolicy(nn.Module):
 
         # Create a network object with the constructor parameters
         policy = NNPolicy()
+
         # Load the weights
         policy.load_state_dict(torch.load(state_file))
         print('Policy loaded from ' + state_file)
+
         # Set the network to evaluation mode
         policy.eval()
         return policy
@@ -112,24 +120,40 @@ class NNPolicy(nn.Module):
         :return: list of rewards per episode
         '''
 
+        # Set up the environment
         env = gym.make('LunarLanderContinuous-v2')
         rewards = []
+
+        # Counter for the number of episodes (for logging purposes)
         i = 0
 
+        # Create episodes until the specified limit is reached
         for episode in range(num_episodes):
+
+            # Print progress
             if i % 10 == 0:
                 print("NN Policy: Evaluating episode #{}".format(i))
             i = i + 1
+
+            # Reset environment and get first state
             observation = env.reset()
             episode_reward = 0
+
+            # Iterate through the steps of the episode
             while True:
                 # Unsqueeze Pytorch tensor
                 state = torch.from_numpy(observation).float().unsqueeze(0)
 
+                # Get outputs from neural network
                 output = self.forward(state)
+
+                # The first two elements are the action
                 action = output[:, 0:2]
+
+                # Observe the reaction of the environment
                 observation, reward, done, info = env.step(np.array([action[0][0], action[0][1]]))
-                # env.render()
+
+                # Compute episode reward
                 episode_reward += reward
                 if done:
                     rewards.append(episode_reward)
