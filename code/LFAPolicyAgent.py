@@ -117,17 +117,18 @@ class LFAPolicy:
         :param: state: Input state vector of size 8 (1D numpy array)
         :return: Continuous action vector of size 2 (1D numpy array)
         '''
+        state = state.tolist()
 
         # Compute feature vector
-        feature_vector = self.poly_features(state)
+        feature_vector = np.array(self.poly_features(state))
+
 
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
 
         # Return the computed actions
-        return output_units[0], output_units[1]
+        return output_units
 
-    #TODO: update after updating select_action_deterministic
     def evaluate(self,num_episodes):
         '''
         Function for evaluating the Policy using deterministic action selection used
