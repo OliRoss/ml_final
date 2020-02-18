@@ -29,8 +29,6 @@ if label_1 is None:
     label_1 = file_1
 if label_2 is None:
     label_2 = file_2
-if out_file is None:
-    out_file = 'comparison.png'
 
 # Plot the rewards
 fig = plt.figure(0, figsize=(20, 8))
@@ -44,5 +42,6 @@ plt.grid()
 plt.xlabel('Episode')
 plt.ylabel('Rewards')
 plt.legend()
-plt.savefig(out_file)
+if out_file is not None:
+    plt.savefig(out_file)
 plt.show()
