@@ -9,16 +9,16 @@ import argparse
 import os
 
 
-parser = argparse.ArgumentParser('Evaluate an agent on the lunar lander environment.')
+parser = argparse.ArgumentParser('python3 eval_policy.py')
 parser.add_argument('num_episodes', metavar='num_episodes', type=int, nargs=1,
-                    help='Amount of episodes that the agent will be evaluated for', action='store')
-parser.add_argument('-f', action='store', type=str, dest='file', help='Optional filename for saved models. If none is given, '
-                                                            'a random agent is evaluated.')
-parser.add_argument('-o', action='store', dest='out_file', help='Optional filename for csv-Data')
-parser.add_argument('-r', action='store', type=int, dest='random_seed', help='Optional random seed for the environment.'
-                                                                             'If none is given, 123 will be used.')
-parser.add_argument('-p', action='store', type=int, dest='poly_degree', help='Polynomial degree of the LFA Agent.'
-                                                                             'Only needed for LFA agents')
+                    help='amount of episodes that the agent will be evaluated for', action='store')
+parser.add_argument('-f', action='store', type=str, dest='file', help='optional filename for saved models.'
+                                                         ' If none is given, a random agent is evaluated.')
+parser.add_argument('-o', action='store', dest='out_file', help='optional filename for csv-Data')
+parser.add_argument('-r', action='store', type=int, dest='random_seed', help='optional random seed for the environment.'
+                                                         ' If none is given, 123 will be used.')
+parser.add_argument('-p', action='store', type=int, dest='poly_degree', help='polynomial degree of the LFA Agent.'
+                                                         ' Only needed for LFA agents')
 args = parser.parse_args()
 
 num_episodes = args.num_episodes[0]
@@ -44,7 +44,8 @@ if args.file is not None:
             raise Exception("Please provide the polynomial degree of the LFA Agent.")
         policy = LFAPolicyAgent.LFAPolicy(poly_degree,random_seed)
         policy.load(args.file)
-        file_str = 'logs/' + 'lfa_agent_degree_' + "{}".format(poly_degree) + datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
+        file_str = 'logs/' + 'lfa_agent_degree_' + "{}".format(poly_degree) + \
+                   datetime.now().strftime("_%d_%m_%H:%M") + '_rewards.csv'
     else:
         raise Exception('Please provide valid input. See eval_policy.py -h for help.')
 else:
