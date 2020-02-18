@@ -2,25 +2,15 @@ import numpy as np
 import gym
 import random
 import matplotlib.pyplot as plt
-import time
 from datetime import datetime
 import torch
-import torch.nn as nn
-import torch.distributions as torch_dist
-import torch.nn.functional as F
 import torch.optim as optim
 
 # Initialize the environment
 env = gym.make('LunarLanderContinuous-v2')
 
 # Define hyperparameters
-RANDOM_SEED = 123
 SAVE_INTERVAL = 50
-
-# Set seeds for reproducability
-random.seed(RANDOM_SEED)
-env.seed(RANDOM_SEED)
-np.random.seed(RANDOM_SEED)
 
 
 def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, log_interval=1):
@@ -106,6 +96,7 @@ def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, 
     plt.show()
 
     return ep_rewards, running_rewards
+
 
 def perform_update(policy, learning_rate, gamma = 0.9):
     # Define the optimizer and set the learning rate

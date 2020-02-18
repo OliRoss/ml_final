@@ -9,6 +9,7 @@ RANDOM_SEED = 123
 random.seed(RANDOM_SEED)  
 np.random.seed(RANDOM_SEED)
 
+
 class random_policy():
     def __init__(self):
         self.env = gym.make('LunarLanderContinuous-v2')

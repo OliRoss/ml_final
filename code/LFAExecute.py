@@ -1,6 +1,5 @@
-import sys
 import LFAPolicyAgent
-import train_policy
+import LFATrainPolicy
 import argparse
 
 parser = argparse.ArgumentParser('REINFORCE algo to learn lunar lander')
@@ -37,4 +36,4 @@ if file is not None:
     policy.load(file)
     if len(policy.weights) != (policy.poly_degree + 1)**8:
         raise ValueError('The given polynomial degree is not compatible with the loaded weight matrix')
-train_policy.train(policy, step_size, render,num_episodes, gamma, log_interval)
+LFATrainPolicy.train(policy, step_size, render,num_episodes, gamma, log_interval)

@@ -1,9 +1,8 @@
 import numpy as np
 import gym
-import time
 
 STDDEV = np.exp(-.5)
-# STDDEV = 1
+
 
 class LFAPolicy:
     def __init__(self, poly_degree, random_seed=123):

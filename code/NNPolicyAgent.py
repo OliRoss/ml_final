@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributions as torch_dist
 
+
 class NNPolicy(nn.Module):
     def __init__(self, random_seed=123):
         super(NNPolicy, self).__init__()
