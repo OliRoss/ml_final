@@ -44,7 +44,7 @@ def reinforce(policy, learning_rate, render=False, num_episodes=100, gamma=0.9, 
             state, reward, done, _ = env.step(np.array([action[0][0], action[0][1]]))
 
             # Render, if necessary
-            if render:
+            if render == "True":
                 env.render()
 
             # Store the current reward
