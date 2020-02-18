@@ -32,8 +32,8 @@
 
 \noindent
 % Put name and c-number of first member
-\textbf{Name/C-number:Raoul Schikora/csav8467}  \\
-\textbf{Name/C-number:Oliver Roß/csaq8749}  \\
+\textbf{Name/C-number:Raoul Schikora/csav8467, matriculation number: 11816400}  \\
+\textbf{Name/C-number:Oliver Roß/csaq8749, matriculation number: 1318439}  \\
 
 \section{Answers}
 
@@ -46,6 +46,29 @@ We used a polynomial degree of 3. The higher the degree the more complex feature
 
 We trained our LFA Policy Agent with a discount factor $\gamma = 0.9$, a step size $\alpha = 0.02$ and $n = 3$ for 1000 episodes.
 	Figures \ref{fig:1} through \ref{fig:3} show the reward per episode during training.
+\item Answer to question 3 
+	
+Our agent didn't perform significantly better than the random agent. When evaluating the policy after it was learned, with deterministically chosen actions (instead of sampled from a gaussian), we observed slightly better performance and less variance compared to the random agent(see figure \ref{fig:4}). Varying the learning rate from $10^{-5}$ to $10^{12}$ didn't yield any notable improvement. We didn't achieve any results better than the random agent with any hyperparameters. This made it very difficult to analyse impacts of different hyperparameters.
+	
+\item Answer to question 4
+
+	Our neural network has an input layer with 8 units, two layers with 64 units, one layer with 16 units, and one output layer with 4 units. The four output units represent the two-dimensional mean and the-two dimensional standard deviation of the normal distribution over which we sample to choose the action. Training was done with a discount factor of 0.88 in order to stronger take returns into account that lay in the future. When choosing higher discount factors, we noticed that the agent didn't use the engine at all. We experimentally determined the learning rate of the gradient descent step to 0.0001. We have tried different architectures with more and less depth, as well as more or less hidden units per layer and couldn't find any configuration with better results.
+
+\item Answer to question 5 (include 3 figures)
+
+Figures \ref{fig:5} through \ref{fig:7} show the comparison between the three NN Policy Agents and the random agent.
+	
+\item Answer to question 6
+
+The NN Policy Agent shows episodic rewards with a smaller variance than the episodic rewards of the random agent. However, maximal rewards do not exceed those of the random agent. We found that the hyperparameters strongly depend on each other and only very specific combinations yielded better than random results. Possibly a better architecture could achieve better results, however, deeper networks didn't improve in our tests.
+
+\item Remarks
+
+	Unfortunately, despite excessive testing and many different design changes, we weren't able to find any configuration with significantly better results than the random agent. This made it almost impossible for us to infer insights about the role of the different hyperparameters. We have checked our code to the best of our knowledge and spent several days trying to achieve the set goal.
+
+\end{enumerate}
+
+
 	\begin{figure}
 	\begin{center}
 		\includegraphics[width = 20cm]{12345678.png}
@@ -69,9 +92,7 @@ We trained our LFA Policy Agent with a discount factor $\gamma = 0.9$, a step si
 		\label{fig:3}
 	\end{center}
 	\end{figure}
-\item Answer to question 3 
-	
-Our agent didn't perform significantly better than the random agent. When evaluating the policy after it was learned, with deterministically chosen actions (instead of sampled from a gaussian), we observed slightly better performance and less variance compared to the random agent(see figure \ref{fig:4}). Varying the learning rate from $10^{-5}$ to $10^{12}$ didn't yield any notable improvement. We didn't achieve any results better than the random agent with any hyperparameters. This made it very difficult to analyse impacts of different hyperparameters.
+
 	\begin{figure}
 	\begin{center}
 		\includegraphics[width = 20cm]{12345678_eval.png}
@@ -79,18 +100,11 @@ Our agent didn't perform significantly better than the random agent. When evalua
 		\label{fig:4}
 	\end{center}
 	\end{figure}
-	
-\item Answer to question 4
 
-Our neural network has an input layer with 8 units, two layers with 64 units, one layer with 16 units, and one output layer with 4 units. The four output units represent the two dimensional mean and the two dimensional standard deviation of the normal distribution over which we sample to choose the action. Training was done with a discount factor of 0.88 in order to stronger take returns into account that lay in the future. We experimentally determined the learning rate of the gradient descent step to 0.0001. 
-
-\item Answer to question 5 (include 3 figures)
-
-Figures \ref{fig:5} through \ref{fig:7} show the comparison between the three NN Policy Agents and the random agent.
-\begin{figure}
+	\begin{figure}
 	\begin{center}
 		\includegraphics[width = 20cm]{nn_2611.png}
-		\caption{LFA Policy Agent, trained with random seed 12345678. Episode rewards during training.}
+		\caption{Neural network policy agent, trained with random seed 2611. Episode rewards during training.}
 		\label{fig:5}
 	\end{center}
 	\end{figure}
@@ -98,22 +112,15 @@ Figures \ref{fig:5} through \ref{fig:7} show the comparison between the three NN
 	\begin{figure}
 	\begin{center}
 		\includegraphics[width = 20cm]{nn_2612.png}
-		\
-		\caption{LFA Policy Agent, trained with random seed 2612. Episode rewards during training.}
+		\caption{Neural network policy agent, trained with random seed 2612. Episode rewards during training.}
 		\label{fig:6}
 	\end{center}
 	\end{figure}
 	\begin{figure}
 	\begin{center}
 		\includegraphics[width = 20cm]{nn_2613.png}
-		\caption{LFA Policy Agent, trained with random seed 2613. Episode rewards during training.}
+		\caption{Neural network policy agent, trained with random seed 2613. Episode rewards during training.}
 		\label{fig:7}
 	\end{center}
 	\end{figure}
-	
-\item Answer to question 6
-
-The NN Policy Agent shows episodic rewards with a smaller variance than the episodic rewards of the random agent. However, maximal rewards do not exceed those of the random agent. We found that the hyperparameters strongly depend on each other and only very specific combinations yielded better than random results. Possibly a better architecture could achieve better results, however, deeper networks didn't improve in our tests.
-\end{enumerate}
-
 \end{document}
