@@ -3,9 +3,7 @@ import gym
 import time
 
 STDDEV = np.exp(-.5)
-#STDDEV = 0.3
-LEARNING_RATE = 5e-2
-
+# STDDEV = 1
 
 class LFAPolicy:
     def __init__(self, poly_degree, random_seed=123):
@@ -101,12 +99,11 @@ class LFAPolicy:
         # Compute log prob for given state and actions
         factor = (action - output_units)/(STDDEV**2)
 
-        log_prob = np.array([factor[0] * feature_vector, factor[1] * feature_vector]).T
+        log_prob = np.array([(1-mean[0]**2) * factor[0] * feature_vector, (1-mean[1]**2) * factor[1] * feature_vector]).T
         self.saved_log_probs.append(log_prob)
 
         return action
 
-    #TODO: Update according to the new poly_features function
     def select_action_deterministic(self,state):
         '''
         Selects an action from the given observed state, by using
@@ -121,7 +118,6 @@ class LFAPolicy:
 
         # Compute feature vector
         feature_vector = np.array(self.poly_features(state))
-
 
         # Multiply feature vector with weight vector
         output_units = feature_vector.T @ self.weights
