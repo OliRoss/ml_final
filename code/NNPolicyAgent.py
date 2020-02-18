@@ -11,9 +11,16 @@ class NNPolicy(nn.Module):
     def __init__(self, random_seed=123):
         super(NNPolicy, self).__init__()
 
-        #TODO: complete
         '''
         Neural network with the following architecture:
+        8 unit input layer
+        64 unit fully connected layer
+        64 unit fully connected layer
+        16 unit fully connected layer
+        4 unit fully connected layer
+        
+        All layers have dropout layers with p = 0.6 in between. 
+        All activation functions are ReLU, except for the output units.
         
         '''
         self.random_seed = random_seed
