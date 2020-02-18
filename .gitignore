@@ -1,4 +1,5 @@
 *.fdb_latexmk
+*.aux
 *.fls
 *.out
 *.pdf
